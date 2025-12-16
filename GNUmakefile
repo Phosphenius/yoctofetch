@@ -2,31 +2,16 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-# Variables explicitly set to prevent override from env.
-# All of these should be sourced from config.mk, which takes env vars into accout.
-ARCH =
-CFLAGS_CONFIG =
-DESTDIR =
-LDFLAGS_CONFIG =
-prefix =
-CC=
-CPPFLAGS_CONFIG =
-SRCDIR =
+# Makefile for GNU make—utilizes GNU coreutils.
 
--include config.mk
-
-BINNAME = yoctofetch
-
-CFLAGS_EXTRA = -Wall -Werror -Wextra -Wpedantic -pedantic-errors -g3 \
-				 -fno-unwind-tables \
-				 -fno-asynchronous-unwind-tables -Qn
+include base.mk
 
 override CFLAGS = $(CFLAGS_EXTRA) $(CFLAGS_CONFIG) -ffreestanding \
 	-fno-stack-protector
 override CPPFLAGS = $(CPPFLAGS_CONFIG) -MMD -MP
 override LDFLAGS = $(LDFLAGS_CONFIG) -nostdlib
 
-$(BINNAME): $(SRCDIR)/$(BINNAME).o arch/$(ARCH)/start.o arch/$(ARCH)/syscall.o
+$(BINNAME): src/$(BINNAME).o arch/$(ARCH)/start.o arch/$(ARCH)/syscall.o
 	$(CC) $(LDFLAGS) $^ -o $@ $(LOADLIBES) $(LDLIBS)
 
 .PHONY: install
@@ -39,18 +24,4 @@ install: $(BINNAME)
 	install -m 655 completion/yoctofetch.bash \
 		$(DESTDIR)$(prefix)/share/bash-completion/completions
 
-.PHONY: clang-format
-clang-format:
-	clang-format -i $(SRCDIR)/*.c $(SRCDIR)/*.h
 
-.PHONY: clean
-clean:
-	-rm $(SRCDIR)/*.o $(SRCDIR)/*.d
-	-rm arch/$(ARCH)/*.o
-	-rm $(BINNAME)
-
-.PHONY: distclean
-distclean: clean
-	-rm config.mk
-
--include $(SRCDIR)/*.d

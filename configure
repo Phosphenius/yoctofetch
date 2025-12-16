@@ -23,7 +23,6 @@ VARIABLE ASSIGNMENT
 BUILD OPTIONS:
     --build=<build type>            Set the build type.
     --host=<host type>              Set the host type.
-    --srcdir=<path>                 Set srcdir. Defaults to ./src.
 
 INSTALL OPTIONS:
     --prefix=<dir>                  Set prefix path. Defaults to /usr/local/.
@@ -50,7 +49,6 @@ cflags=${CFLAGS-}
 cppflags=${CPPFLAGS-}
 ldflags=${LDFLAGS-}
 prefix=/usr/local/
-srcdir=./src
 
 for arg; do
 	case "$arg" in
@@ -62,7 +60,6 @@ for arg; do
 		CPPFLAGS=*) cppflags=${arg#*=} ;;
 		LDFLAGS=*) ldflags=${arg#*=} ;;
 		CC=*) cc=${arg#*=} ;;
-		--srcdir=*) srcdir=${arg#*=} ;;
 		-*) echo "$0: Unknown option '$arg'" ;;
 		*=*) ;;
 		*) build_type=$arg ;;
@@ -123,7 +120,6 @@ CFLAGS_CONFIG=$cflags
 CPPFLAGS_CONFIG=$cppflags
 LDFLAGS_CONFIG=$ldflags
 prefix=$prefix
-SRCDIR=$srcdir
 EOF
 
 printf "done\n"

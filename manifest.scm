@@ -12,6 +12,7 @@
 				"kcachegrind"
 				"graphviz"
                                 "make"
+                                "bmake"
                                 "universal-ctags"
                                 "shellcheck"
                                 "valgrind"
