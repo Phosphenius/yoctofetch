@@ -61,7 +61,7 @@ It can easily be installed on **Guix** with the following channel configuration:
         (branch "main")
         (introduction
           (make-channel-introduction
-            "55cd6d8e0ebce77af9fda1a5b2b00ea004c7fb8c"
+            "259077c4909205af495edd5b5dded5b1173f0217"
             (openpgp-fingerprint
               "E504 167C B345 F93E 11AE  341C 1CDA 78BC 7F6C F294"))))
 ```
