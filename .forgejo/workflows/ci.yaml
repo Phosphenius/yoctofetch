@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2025 Luca Kredel <luca.kredel@web.de>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/*.c"
+      - "src/*.h"
+      - "src/*.S"
+      - "GNUmakefile"
+      - "configure"
+
+jobs:
+  build:
+    runs-on: codeberg-tiny-lazy
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+      - name: configure
+        run: ./configure
+      - name: build
+        run: make
+

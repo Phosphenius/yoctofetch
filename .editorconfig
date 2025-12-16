@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: 2025 Luca Kredel <luca.kredel@web.de>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# NOTE: Do not set indent_size for any section which uses tabs for indendation.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{c,h}]
+indent_style = tab
+
+[{*.bash,configure}]
+indent_style = tab
+
+[GNUmakefile]
+indent_style = tab

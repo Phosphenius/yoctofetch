@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2025 Luca Kredel <luca.kredel@web.de>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+/.guix/**/* -linguist-detectable
+/guix.scm -linguist-detectable
+/channels.scm -linguist-detectable
+/manifest.scm -linguist-detectable
+
+yoctofetch.1 linguist-documentation

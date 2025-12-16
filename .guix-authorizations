@@ -1,0 +1,9 @@
+;; SPDX-FileCopyrightText: 2025 Luca Kredel <luca.kredel@web.de>
+;;
+;; SPDX-License-Identifier: GPL-3.0-or-later
+
+(authorizations
+ (version 0)
+
+ (("E504 167C B345 F93E 11AE 341C 1CDA 78BC 7F6C F294"
+   (name "phosphenius"))))

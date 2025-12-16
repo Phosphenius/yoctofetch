@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2023 Luca Kredel <luca.kredel@web.de>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+*.d
+*.o
+
+config.mk
+
+yoctofetch

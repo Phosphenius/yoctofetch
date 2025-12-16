@@ -1,0 +1,10 @@
+version = 1
+SPDX-PackageName = "yoctofetch"
+SPDX-PackageSupplier = "Luca Kredel <luca.kredel@web.de>"
+
+[[annotations]]
+path = [
+    ".forgejo/assets/*.png",
+]
+SPDX-FileCopyrightText = "2025 Luca Kredel <luca.kredel@web.de>"
+SPDX-License-Identifier = "CC-BY-SA-4.0"
