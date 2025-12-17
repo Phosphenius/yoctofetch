@@ -280,11 +280,13 @@ void buffer_append_uptime(
 		buffer_append_int(buffer, uptime_mins);
 
 		if (uptime_mins == 1) {
-			buffer_append_string(buffer, STR(" minute\n"));
+			buffer_append_string(buffer, STR(" minute"));
 		} else {
-			buffer_append_string(buffer, STR(" minutes\n"));
+			buffer_append_string(buffer, STR(" minutes"));
 		}
 	}
+
+	buffer_append_char(buffer, '\n');
 }
 
 void buffer_append_shell(
