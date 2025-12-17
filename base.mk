@@ -24,7 +24,7 @@ all: $(BINNAME)
 
 .PHONY: clang-format
 clang-format:
-	clang-format -i src*.c src/*.h
+	clang-format -i src/*.c src/*.h
 
 .PHONY: clean
 clean:
