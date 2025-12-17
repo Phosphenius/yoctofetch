@@ -29,7 +29,7 @@ start:
 	 * alphabetic chars to lower case. */
 	input = buffer[buffer_index++] | 32;
 
-	if (input == string.data[string_index]) {
+	if (input == (string.data[string_index] | 32)) {
 		string_index++;
 		goto name_char;
 	}
@@ -43,7 +43,7 @@ name_char:
 
 	input = buffer[buffer_index++] | 32;
 
-	if (input == string.data[string_index]) {
+	if (input == (string.data[string_index] | 32)) {
 		string_index += (string_index + 1 < string.length);
 		goto name_char;
 	} else if (input == '=') {
