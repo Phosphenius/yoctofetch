@@ -18,3 +18,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Uptime output missing a newline sometimes.
+- Uptime edge cases—like exactly one hour, or less than one minute.

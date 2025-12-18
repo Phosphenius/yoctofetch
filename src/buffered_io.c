@@ -259,15 +259,27 @@ void buffer_append_uptime(
 		uptime_hrs++;
 	}
 
-	buffer_append_int(buffer, uptime_days);
-
-	if (uptime_days == 1) {
-		buffer_append_string(buffer, STR(" day, "));
-	} else if (uptime_days != 0) {
-		buffer_append_string(buffer, STR(" days, "));
+	if (uptime_days > 0) {
+		buffer_append_int(buffer, uptime_days);
 	}
 
-	buffer_append_int(buffer, uptime_hrs);
+	if (uptime_days == 1) {
+		if (uptime_hrs != 0 || uptime_mins != 0) {
+			buffer_append_string(buffer, STR(" day, "));
+		} else {
+			buffer_append_string(buffer, STR(" day "));
+		}
+	} else if (uptime_days != 0) {
+		if (uptime_hrs != 0 || uptime_mins != 0) {
+			buffer_append_string(buffer, STR(" days, "));
+		} else {
+			buffer_append_string(buffer, STR(" days "));
+		}
+	}
+
+	if (uptime_hrs > 0) {
+		buffer_append_int(buffer, uptime_hrs);
+	}
 
 	if (uptime_hrs == 1) {
 		buffer_append_string(buffer, STR(" hour"));
@@ -276,7 +288,10 @@ void buffer_append_uptime(
 	}
 
 	if (uptime_mins != 0) {
-		buffer_append_string(buffer, STR(", "));
+		if (uptime_hrs >= 1) {
+			buffer_append_string(buffer, STR(", "));
+		}
+
 		buffer_append_int(buffer, uptime_mins);
 
 		if (uptime_mins == 1) {
@@ -284,6 +299,8 @@ void buffer_append_uptime(
 		} else {
 			buffer_append_string(buffer, STR(" minutes"));
 		}
+	} else if (uptime_mins == 0 && uptime_hrs == 0 && uptime_days == 0) {
+		buffer_append_string(buffer, STR("< 1 minute"));
 	}
 
 	buffer_append_char(buffer, '\n');
