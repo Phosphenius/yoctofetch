@@ -71,11 +71,13 @@ char *getenv_or(
 	}
 
 	/* Fallback—search without cache in case cache is too small. */
-	for (int i = 0; envp[i] != NULL; ++i) {
-		char *res = find_env_name(env_name, i, envp);
+	if ((length + 1) >= ENV_INDEX_CACHE_SIZE) {
+		for (int i = 0; envp[i] != NULL; ++i) {
+			char *res = find_env_name(env_name, i, envp);
 
-		if (res != NULL) {
-			return res;
+			if (res != NULL) {
+				return res;
+			}
 		}
 	}
 
