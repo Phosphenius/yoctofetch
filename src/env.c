@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#define ENV_INDEX_CACHE_SIZE 16
+#define ENV_INDEX_CACHE_SIZE 20
 
 struct env_index_cache_entry {
 	size_t length;
