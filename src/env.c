@@ -31,6 +31,22 @@ void populate_env_cache(
 	}
 }
 
+char *find_env_name(char *env_name, int index, char *envp[])
+{
+	for (int i = 0; envp[index][i] != '\0' && env_name[i] != '\0'; ++i) {
+		if (envp[index][i] != env_name[i]) {
+			break;
+		}
+
+		if (env_name[i + 1] == '\0' && envp[index][i + 1] != '\0' &&
+		    envp[index][i + 1] == '=' && envp[index][i + 2] != '\0') {
+			return envp[index] + i + 2;
+		}
+	}
+
+	return NULL;
+}
+
 char *getenv_or(
     char *env_name,
     char *envp[],
@@ -46,33 +62,20 @@ char *getenv_or(
 	     ++cached_index_index) {
 		int i =
 		    env_index_cache[cache_index].indices[cached_index_index];
-		for (int j = 0, k = 0;
-		     envp[i][j] != '\0' && env_name[k] != '\0';
-		     ++j, ++k) {
-			if (envp[i][j] != env_name[k]) {
-				break;
-			}
 
-			if (env_name[k + 1] == '\0' && envp[i][j + 1] != '\0' &&
-			    envp[i][j + 1] == '=' && envp[i][j + 2] != '\0') {
-				return envp[i] + j + 2;
-			}
+		char *res = find_env_name(env_name, i, envp);
+
+		if (res != NULL) {
+			return res;
 		}
 	}
 
 	/* Fallback—search without cache in case cache is too small. */
 	for (int i = 0; envp[i] != NULL; ++i) {
-		for (int j = 0, k = 0;
-		     envp[i][j] != '\0' && env_name[k] != '\0';
-		     ++j, ++k) {
-			if (envp[i][j] != env_name[k]) {
-				break;
-			}
+		char *res = find_env_name(env_name, i, envp);
 
-			if (env_name[k + 1] == '\0' && envp[i][j + 1] != '\0' &&
-			    envp[i][j + 1] == '=' && envp[i][j + 2] != '\0') {
-				return envp[i] + j + 2;
-			}
+		if (res != NULL) {
+			return res;
 		}
 	}
 
