@@ -25,5 +25,3 @@ arch/$(ARCH)/syscall.o: arch/$(ARCH)/syscall.S
 
 $(BINNAME): src/$(BINNAME).o arch/$(ARCH)/start.o arch/$(ARCH)/syscall.o
 	$(CC) $(LDFLAGS_ALL) $? -o $@ $(LOADLIBES) $(LDLIBS)
-
-
