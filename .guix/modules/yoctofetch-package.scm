@@ -32,7 +32,7 @@
     (synopsis "Fast(est) system fetch tool for Linux with a low footprint")
     (description
      "System fetch tool like neofetch, nanofetch etc.  It is very fast and very
-     lightwheigt, but also very limited in features.")
+     lightweight.")
     (home-page "https://codeberg.org/Phosphenius/yoctofetch")
     (license license:agpl3+)))
 
