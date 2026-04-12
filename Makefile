@@ -5,7 +5,7 @@
 .POSIX:
 .SUFFIXES:
 
-# POSIX compatible makefile-utilizes POSIX coreutils.
+# POSIX compatible makefile.
 
 include base.mk
 
