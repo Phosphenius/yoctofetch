@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#pragma once
-
 extern void *syscall1(size_t number, void *arg1);
 extern void *syscall3(size_t number, void *arg1, void *arg2, void *arg3);
 extern void *
