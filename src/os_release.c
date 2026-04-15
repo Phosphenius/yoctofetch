@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#define O_RDONLY 0
-
 struct os_release_result {
 	struct string name;
 	struct string id;

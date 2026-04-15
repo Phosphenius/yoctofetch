@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#define O_RDONLY 0
+
 #include <stddef.h>
 
 #include "types.h"
