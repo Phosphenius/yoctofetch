@@ -14,6 +14,7 @@
 
 #include "unistd.c"
 
+#include "buffer.c"
 #include "logos.c"
 #include "string.c"
 
