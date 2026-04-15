@@ -4,19 +4,25 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-static const char *guix_logo_data[] = {
-    "..                             `.",
-    "`--..```..`           `..```..--`",
-    "  .-:///-:::.       `-:::///:-.  ",
-    "     ````.:::`     `:::.````     ",
-    "          -//:`    -::-          ",
-    "           ://:   -::-           ",
-    "           `///- .:::`           ",
-    "            -+++-:::.            ",
-    "             :+/:::-             ",
-    "             `-....`             "};
+#define GUIX_LOGO_WIDTH 40
+#define GUIX_LOGO_HEIGHT 9
 
-static const char *arch_logo_data[] = {
+char guix_logo_data[][GUIX_LOGO_WIDTH + 1] = {
+    "\033[1;39m..                             `.",
+    "\033[1;39m`--..```..`           `..```..--`",
+    "\033[1;39m  .-:///-:::.       `-:::///:-.  ",
+    "\033[1;39m     ````.:::`     `:::.````     ",
+    "\033[1;39m          -//:`    -::-          ",
+    "\033[1;39m           ://:   -::-           ",
+    "\033[1;39m           `///- .:::`           ",
+    "\033[1;39m            -+++-:::.            ",
+    "\033[1;39m             :+/:::-             ",
+    "\033[1;39m             `-....`             "};
+
+#define ARCH_LOGO_WIDTH 40
+#define ARCH_LOGO_HEIGHT 18
+
+char arch_logo_data[][ARCH_LOGO_WIDTH + 1] = {
     "                  -`                 ",
     "                 .o+`                ",
     "                `ooo/                ",
@@ -37,14 +43,8 @@ static const char *arch_logo_data[] = {
     "`++:.                           `-/+/",
     ".`                                 `/"};
 
-struct logo {
-	const char **data;
-	int width;
-	int height;
+enum logo {
+	LOGO_NONE,
+	LOGO_GUIX,
+	LOGO_ARCH,
 };
-
-static const struct logo guix_logo = {
-    .data = guix_logo_data, .width = 33, .height = 9};
-
-static const struct logo arch_logo = {
-    .data = arch_logo_data, .width = 40, .height = 18};

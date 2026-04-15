@@ -17,6 +17,7 @@ enum {
 enum {
 	__NR_openat = 56,
 	__NR_close = 57,
+	__NR_writev = 66,
 	__NR_read = 63,
 	__NR_write = 64,
 	__NR_uname = 160,
@@ -29,6 +30,7 @@ enum {
 	__NR_read = 0,
 	__NR_write = 1,
 	__NR_close = 3,
+	__NR_writev = 20,
 	__NR_uname = 63,
 	__NR_sysinfo = 99,
 	__NR_openat = 257,
