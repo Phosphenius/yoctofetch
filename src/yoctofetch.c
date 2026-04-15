@@ -105,7 +105,8 @@ int main(int argc, char *argv[], char *envp[])
 		return -1;
 	}
 
-	struct env_index_cache_entry env_index_cache[26] = {0};
+	struct env_index_cache_entry
+	    env_index_cache[NUM_ENV_INDEX_CACHE_ENTRIES] = {0};
 	populate_env_cache(envp, env_index_cache);
 
 	char *user = getenv_or("USER", envp, env_index_cache, "Unknown");

@@ -5,11 +5,19 @@
  */
 
 #define ENV_INDEX_CACHE_SIZE 20
+#define NUM_ENV_INDEX_CACHE_ENTRIES 5
 
 struct env_index_cache_entry {
 	size_t length;
 	size_t indices[ENV_INDEX_CACHE_SIZE];
 };
+
+/* Map each char of the alphabet that we want to cache to an index > -1. */
+/* NUM_ENV_INDEX_CACHE_ENTRIES holds the number of currently mapped chars. */
+/* Current chars: n, s, t, u, x */
+const int env_cache_index_map[] = {-1, -1, -1, -1, -1, -1, -1, -1, -1,
+                                   -1, -1, -1, -1, 0,  -1, -1, -1, -1,
+                                   1,  2,  3,  -1, -1, 4,  -1, -1};
 
 void populate_env_cache(
     char *envp[], struct env_index_cache_entry env_index_cache[])
@@ -19,6 +27,12 @@ void populate_env_cache(
 		int index = first - 97;
 
 		if (index < 0 || index > 25) {
+			continue;
+		}
+
+		index = env_cache_index_map[index];
+
+		if (index == -1) {
 			continue;
 		}
 
@@ -58,8 +72,11 @@ char *getenv_or(
 {
 	int cache_index = (env_name[0] | 32) - 97;
 
+	cache_index = env_cache_index_map[cache_index];
+
 	int length = env_index_cache[cache_index].length *
-	             (cache_index >= 0 && cache_index <= 25);
+	             (cache_index >= 0 &&
+	              cache_index <= NUM_ENV_INDEX_CACHE_ENTRIES - 1);
 
 	for (int cached_index_index = 0; cached_index_index < length;
 	     ++cached_index_index) {
@@ -74,7 +91,7 @@ char *getenv_or(
 	}
 
 	/* Fallback—search without cache in case cache is too small. */
-	if ((length + 1) >= ENV_INDEX_CACHE_SIZE) {
+	if ((length + 1) >= ENV_INDEX_CACHE_SIZE || cache_index == -1) {
 		for (int i = 0; envp[i] != NULL; ++i) {
 			char *res = find_env_name(env_name, i, envp);
 
