@@ -19,6 +19,7 @@
 
 #include "buffered_io.c"
 #include "env.c"
+#include "file_io.c"
 #include "os_release.c"
 #include "sysinfo.c"
 #include "uname.c"
@@ -26,23 +27,6 @@
 enum {
 	FILE_BUF_LEN = 128,
 };
-
-struct string read_file(char *file, char *buf, int buf_len, struct string alt)
-{
-	struct fd_result fd_res = open(file, O_RDONLY);
-
-	if (!fd_res.ok) {
-		return alt;
-	}
-
-	struct io_result read_res = read(fd_res.fd, buf, buf_len);
-
-	if (!read_res.ok) {
-		return alt;
-	}
-
-	return (struct string){.data = buf, .length = read_res.n_bytes - 1};
-}
 
 int main(
     __attribute__((unused)) int argc,
