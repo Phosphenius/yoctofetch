@@ -20,8 +20,3 @@ install: $(BINNAME)
 	install -m 755 $< $(DESTDIR)$(prefix)/bin
 	install -d $(DESTDIR)$(prefix)/share/man/man1/
 	install -m 644 yoctofetch.1 $(DESTDIR)$(prefix)/share/man/man1/
-	install -d $(DESTDIR)$(prefix)/share/bash-completion/completions
-	install -m 655 completion/yoctofetch.bash \
-		$(DESTDIR)$(prefix)/share/bash-completion/completions
-
-

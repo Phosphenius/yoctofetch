@@ -23,3 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Improve env var look up performance.
+
+### Removed
+
+- All command line arguments.

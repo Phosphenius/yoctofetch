@@ -15,7 +15,6 @@
 #include "logos.c"
 #include "string.c"
 
-#include "argparse.c"
 #include "buffered_io.c"
 #include "env.c"
 #include "os_release.c"
@@ -43,7 +42,10 @@ struct string read_file(char *file, char *buf, int buf_len, struct string alt)
 	return (struct string){.data = buf, .length = read_res.n_bytes - 1};
 }
 
-int main(int argc, char *argv[], char *envp[])
+int main(
+    __attribute__((unused)) int argc,
+    __attribute__((unused)) char *argv[],
+    char *envp[])
 {
 	char stdout_buffer_backend[1 << 12];
 
@@ -53,48 +55,6 @@ int main(int argc, char *argv[], char *envp[])
 	    .data = stdout_buffer_backend,
 	    .error = 0,
 	    .length = 0};
-
-	if (test_arg(STR("--version"), argc, argv) ||
-	    test_arg(STR("-V"), argc, argv)) {
-		buffer_append_string(
-		    &stdout_buffer,
-		    STR("yoctofetch 1.2.0\n"
-		        "Copyright (C) 2025 Luca Kredel\n"
-		        "License GPLv3+: GNU Affero GPL version 3 or later "
-		        "<https://www.gnu.org/licenses/gpl-3.0.html>\n\n"
-
-		        "This is free software: you are free to change and "
-		        "redistribute it.\n"
-		        "There is NO WARRANTY, to the extent permitted by "
-		        "law.\n"));
-		buffer_flush(&stdout_buffer);
-
-		return 0;
-	} else if (
-	    test_arg(STR("--help"), argc, argv) ||
-	    test_arg(STR("-h"), argc, argv)) {
-		buffer_append_string(
-		    &stdout_buffer,
-		    STR("Usage: yoctofetch [OPTION] …\n\n"
-		        "\t-H, --no-user-at-host\tDo not display user@host\n"
-		        "\t-O, --no-os\t\tDo not display OS\n"
-		        "\t-K, --no-kernel\t\tDo not display kernel name and "
-		        "version.\n"
-		        "\t-U, --no-uptime\t\tDo not display uptime.\n"
-		        "\t-S, --no-shell\t\tDo not display shell.\n"
-		        "\t-D, --no-desktop\tDo not display desktop.\n"
-		        "\t-T, --no-terminal\tDo not display terminal.\n"
-		        "\t-M, --no-memory\t\tDo not display memory.\n"
-		        "\t-P, --no-swap\t\tDo not display swap.\n\n"
-		        "\t--guix-logo\t\tDisplay Guix logo.\n"
-		        "\t--arch-logo\t\tDisplay Arch logo.\n\n"
-		        "\t-V, --version\t\tShow version and exit.\n"
-		        "\t-h, --help\t\tShow this help and exit.\n\n"
-		        "\t--bottom-padding\tAdd 3 lines of padding.\n"));
-		buffer_flush(&stdout_buffer);
-
-		return 0;
-	}
 
 	struct utsname uts = {0};
 	struct sysinfo info = {0};
@@ -127,35 +87,21 @@ int main(int argc, char *argv[], char *envp[])
 	    .logo = {0},
 	    .use_color = use_color};
 
-	if (string_equals(os_release_res.id, STR("guix")) ||
-	    test_arg(STR("--guix-logo"), argc, argv)) {
+	if (string_equals(os_release_res.id, STR("guix"))) {
 		config.logo = guix_logo;
 		config.color = YELLOW;
 		config.no_logo = 0;
 	}
 
-	if (string_equals(os_release_res.id, STR("arch")) ||
-	    test_arg(STR("--arch-logo"), argc, argv)) {
+	if (string_equals(os_release_res.id, STR("arch"))) {
 		config.logo = arch_logo;
 		config.color = CYAN;
 		config.no_logo = 0;
 	}
 
-	if (test_arg(STR("--no-logo"), argc, argv) ||
-	    test_arg(STR("-L"), argc, argv)) {
-		config.no_logo = 1;
-	}
+	buffer_append_user_at_host(&stdout_buffer, &config, user, uts.nodename);
 
-	if (!(test_arg(STR("--user-at-host"), argc, argv) ||
-	      test_arg(STR("-H"), argc, argv))) {
-		buffer_append_user_at_host(
-		    &stdout_buffer, &config, user, uts.nodename);
-	}
-
-	if (!(test_arg(STR("--no-os"), argc, argv) ||
-	      test_arg(STR("-O"), argc, argv))) {
-		buffer_append_os(&stdout_buffer, &config, os_release_res.name);
-	}
+	buffer_append_os(&stdout_buffer, &config, os_release_res.name);
 
 	char prod_name_buf[FILE_BUF_LEN] = {0};
 	char fam_name_buf[FILE_BUF_LEN] = {0};
@@ -184,90 +130,74 @@ int main(int argc, char *argv[], char *envp[])
 		    STR("Unknown"));
 	}
 
-	if (!(test_arg(STR("--no-host"), argc, argv) ||
-	      test_arg(STR("-C"), argc, argv))) {
-		if (string_equals(model_name, STR(""))) {
-			buffer_append_host(
-			    &stdout_buffer, &config, prod_name, fam_name);
-		} else {
-			buffer_append_model(
-			    &stdout_buffer, &config, model_name);
-		}
+	if (string_equals(model_name, STR(""))) {
+		buffer_append_host(
+		    &stdout_buffer, &config, prod_name, fam_name);
+	} else {
+		buffer_append_model(&stdout_buffer, &config, model_name);
 	}
 
-	if (!(test_arg(STR("--no-kernel"), argc, argv) ||
-	      test_arg(STR("-K"), argc, argv))) {
-		buffer_append_kernel(
-		    &stdout_buffer,
-		    &config,
-		    uts.sysname,
-		    uts.release,
-		    uts.machine);
+	struct string strings[] = {
+	    (struct string){.data = uts.sysname, .length = strlen(uts.sysname)},
+	    STR_INIT(" "),
+	    (struct string){.data = uts.release, .length = strlen(uts.release)},
+	};
+
+	buffer_append_name_value(
+	    &stdout_buffer,
+	    &config,
+	    STR("Kernel: "),
+	    sizeof strings / sizeof strings[0],
+	    strings);
+
+	buffer_append_uptime(&stdout_buffer, &config, info.uptime);
+
+	char *shell_raw = getenv_or("SHELL", envp, env_index_cache, NULL);
+	char *shell = trim_shell(shell_raw);
+
+	if (shell == NULL) {
+		shell = "Unknown";
 	}
 
-	if (!(test_arg(STR("--no-uptime"), argc, argv) ||
-	      test_arg(STR("-U"), argc, argv))) {
-		buffer_append_uptime(&stdout_buffer, &config, info.uptime);
-	}
+	buffer_append_name_value(
+	    &stdout_buffer,
+	    &config,
+	    STR("Shell: "),
+	    1,
+	    &(struct string){.data = shell, .length = strlen(shell)});
 
-	if (!(test_arg(STR("--no-shell"), argc, argv) ||
-	      test_arg(STR("-S"), argc, argv))) {
-		char *shell_raw =
-		    getenv_or("SHELL", envp, env_index_cache, NULL);
-		char *shell = trim_shell(shell_raw);
+	char *wm =
+	    getenv_or("XDG_CURRENT_DESKTOP", envp, env_index_cache, "Unknown");
 
-		if (shell == NULL) {
-			shell = "Unknown";
-		}
+	char *session =
+	    getenv_or("XDG_SESSION_TYPE", envp, env_index_cache, "Unknown");
 
-		buffer_append_shell(&stdout_buffer, &config, shell);
-	}
+	buffer_append_desktop(&stdout_buffer, &config, wm, session);
 
-	if (!(test_arg(STR("--no-desktop"), argc, argv) ||
-	      test_arg(STR("-D"), argc, argv))) {
-		char *wm = getenv_or(
-		    "XDG_CURRENT_DESKTOP", envp, env_index_cache, "Unknown");
+	char *term = getenv_or("TERM", envp, env_index_cache, "Unknown");
 
-		char *session = getenv_or(
-		    "XDG_SESSION_TYPE", envp, env_index_cache, "Unknown");
+	buffer_append_name_value(
+	    &stdout_buffer,
+	    &config,
+	    STR("Terminal: "),
+	    1,
+	    &(struct string){.data = term, .length = strlen(term)});
 
-		buffer_append_desktop(&stdout_buffer, &config, wm, session);
-	}
+	buffer_append_memory(
+	    &stdout_buffer,
+	    &config,
+	    (info.totalram - info.freeram - info.bufferram) / 1024 / 1024,
+	    info.totalram / 1024 / 1024);
 
-	if (!(test_arg(STR("--no-terminal"), argc, argv) ||
-	      test_arg(STR("-T"), argc, argv))) {
-		char *term =
-		    getenv_or("TERM", envp, env_index_cache, "Unknown");
-
-		buffer_append_terminal(&stdout_buffer, &config, term);
-	}
-
-	if (!(test_arg(STR("--no-memory"), argc, argv) ||
-	      test_arg(STR("-M"), argc, argv))) {
-		buffer_append_memory(
-		    &stdout_buffer,
-		    &config,
-		    (info.totalram - info.freeram - info.bufferram) / 1024 /
-			1024,
-		    info.totalram / 1024 / 1024);
-	}
-
-	if (!(test_arg(STR("--no-swap"), argc, argv) ||
-	      test_arg(STR("-P"), argc, argv))) {
-		buffer_append_swap(
-		    &stdout_buffer,
-		    &config,
-		    (info.totalswap - info.freeswap) / 1024 / 1024,
-		    info.totalswap / 1024 / 1024);
-	}
+	buffer_append_swap(
+	    &stdout_buffer,
+	    &config,
+	    (info.totalswap - info.freeswap) / 1024 / 1024,
+	    info.totalswap / 1024 / 1024);
 
 	while (config.curr_logo_line <= config.logo.height && !config.no_logo) {
 		buffer_append_logo_line(&stdout_buffer, &config);
 		buffer_append_char(&stdout_buffer, '\n');
-	}
-
-	if (test_arg(STR("--bottom-padding"), argc, argv)) {
-		buffer_append_string(&stdout_buffer, STR("\n\n\n"));
 	}
 
 	buffer_flush(&stdout_buffer);
