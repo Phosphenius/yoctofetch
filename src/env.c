@@ -23,6 +23,9 @@ void populate_env_cache(
 		}
 
 		if (env_index_cache[index].length >= ENV_INDEX_CACHE_SIZE) {
+			/* FIXME: Shouldn’t we continue here instead of break?
+			 * Breaking the loop stops  */
+			/* building the rest of the cache. */
 			break;
 		}
 
