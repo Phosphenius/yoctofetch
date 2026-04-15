@@ -23,12 +23,15 @@
 #include "buffered_io.c"
 #include "env.c"
 #include "file_io.c"
+#include "hashmap.c"
 #include "os_release.c"
 #include "sysinfo.c"
 #include "uname.c"
 
+#include "config.c"
+
 enum {
-	FILE_BUF_LEN = 128,
+	FILE_BUF_LEN = 1 << 9,
 	GATHER_STACK_LENGTH = 32,
 };
 
@@ -75,7 +78,9 @@ int main(
 
 	char *user = getenv_or("USER", envp, env_index_cache, "Unknown");
 
-	char os_release_buffer[1 << 7];
+	struct config config = config_from_file(user);
+
+	char os_release_buffer[1 << 9];
 
 	struct os_release_result os_release_res =
 	    parse_os_release(os_release_buffer, sizeof os_release_buffer);
@@ -84,21 +89,19 @@ int main(
 
 	use_color = getenv_or("NO_COLOR", envp, env_index_cache, NULL) == NULL;
 
-	struct config config = {
-	    .color = GREEN,
-	    .logo = LOGO_NONE,
-	    .use_color = use_color};
+	struct buffer_config buffer_config = {
+	    .color = GREEN, .logo = LOGO_NONE, .use_color = use_color};
 
 	if (string_equals(os_release_res.id, STR("guix"))) {
-		config.logo = LOGO_GUIX;
-		config.color = YELLOW;
-		config.no_logo = 0;
+		buffer_config.logo = LOGO_GUIX;
+		buffer_config.color = YELLOW;
+		buffer_config.no_logo = 0;
 	}
 
 	if (string_equals(os_release_res.id, STR("arch"))) {
-		config.logo = LOGO_ARCH;
-		config.color = CYAN;
-		config.no_logo = 0;
+		buffer_config.logo = LOGO_ARCH;
+		buffer_config.color = CYAN;
+		buffer_config.no_logo = 0;
 	}
 
 	char user_at_host_buffer_backend[64] = "\033[0m\033[1m       ";
@@ -165,15 +168,9 @@ int main(
 	    .data = swap_buffer_backend,
 	    .length = 28};
 
-	char trail_buffer_backend[32] = {0};
-	struct buffer trail_buffer = {
-	    .capacity = sizeof trail_buffer_backend,
-	    .data = trail_buffer_backend,
-	    .length = 0};
-
 	int logo_height = 0;
 
-	switch (config.logo) {
+	switch (buffer_config.logo) {
 	case LOGO_NONE:
 		logo_height = -1;
 		break;
@@ -185,21 +182,28 @@ int main(
 		break;
 	};
 
-	for (int i = 0; i < 18; ++i) {
-		if (i <= logo_height) {
+	int delay_logo = 0;
+	int logo_lines_written = 0;
+	char trailer[] = "\033[0m\n";
+
+	for (int i = 0; i < 30; ++i) {
+		if (logo_lines_written <= logo_height && !delay_logo) {
 			struct iovec iov = {0};
 
-			switch (config.logo) {
+			switch (buffer_config.logo) {
 			case LOGO_NONE:
 				break;
 
 			case LOGO_GUIX:
-				iov.iov_base = guix_logo_data[i];
+				iov.iov_base =
+				    guix_logo_data[logo_lines_written];
 				iov.iov_len = GUIX_LOGO_WIDTH;
 
-				if (config.use_color) {
+				if (buffer_config.use_color) {
 					set_color_at(
-					    guix_logo_data[i], config.color, 5);
+					    guix_logo_data[logo_lines_written],
+					    buffer_config.color,
+					    5);
 				}
 
 				break;
@@ -208,16 +212,22 @@ int main(
 				iov.iov_base = arch_logo_data;
 				iov.iov_len = ARCH_LOGO_WIDTH;
 
-				if (config.use_color) {
+				if (buffer_config.use_color) {
 					set_color_at(
-					    arch_logo_data[i], config.color, 5);
+					    arch_logo_data[logo_lines_written],
+					    buffer_config.color,
+					    5);
 				}
 				break;
 			};
 
+			logo_lines_written++;
+
 			gather_stack_push(
 			    gather_stack, &gather_stack_pointer, iov);
 		}
+
+		delay_logo = 0;
 
 		switch (i) {
 		case 0: {
@@ -238,9 +248,14 @@ int main(
 		}
 
 		case 1: {
-			if (config.use_color) {
+			if (!config.show_os) {
+				delay_logo = 1;
+				continue;
+			}
+
+			if (buffer_config.use_color) {
 				set_color_at(
-				    os_buffer_backend, config.color, 9);
+				    os_buffer_backend, buffer_config.color, 9);
 			}
 
 			buffer_append_string(&os_buffer, os_release_res.name);
@@ -253,9 +268,15 @@ int main(
 		}
 
 		case 2: {
-			if (config.use_color) {
+			if (!config.show_host) {
+				continue;
+			}
+
+			if (buffer_config.use_color) {
 				set_color_at(
-				    host_buffer_backend, config.color, 9);
+				    host_buffer_backend,
+				    buffer_config.color,
+				    9);
 			}
 
 			char prod_name_buf[FILE_BUF_LEN] = {0};
@@ -301,9 +322,15 @@ int main(
 		}
 
 		case 3: {
-			if (config.use_color) {
+			if (!config.show_kernel) {
+				continue;
+			}
+
+			if (buffer_config.use_color) {
 				set_color_at(
-				    kernel_buffer_backend, config.color, 9);
+				    kernel_buffer_backend,
+				    buffer_config.color,
+				    9);
 			}
 
 			buffer_append(
@@ -323,9 +350,15 @@ int main(
 		}
 
 		case 4: {
-			if (config.use_color) {
+			if (!config.show_uptime) {
+				continue;
+			}
+
+			if (buffer_config.use_color) {
 				set_color_at(
-				    uptime_buffer_backend, config.color, 9);
+				    uptime_buffer_backend,
+				    buffer_config.color,
+				    9);
 			}
 
 			buffer_append_uptime(&uptime_buffer, info.uptime);
@@ -337,9 +370,15 @@ int main(
 		}
 
 		case 5: {
-			if (config.use_color) {
+			if (!config.show_shell) {
+				continue;
+			}
+
+			if (buffer_config.use_color) {
 				set_color_at(
-				    shell_buffer_backend, config.color, 9);
+				    shell_buffer_backend,
+				    buffer_config.color,
+				    9);
 			}
 
 			char *shell_raw =
@@ -360,9 +399,13 @@ int main(
 		}
 
 		case 6: {
-			if (config.use_color) {
+			if (!config.show_desktop) {
+				continue;
+			}
+
+			if (buffer_config.use_color) {
 				set_color_at(
-				    wm_buffer_backend, config.color, 9);
+				    wm_buffer_backend, buffer_config.color, 9);
 			}
 			char *wm = getenv_or(
 			    "XDG_CURRENT_DESKTOP",
@@ -388,9 +431,15 @@ int main(
 		}
 
 		case 7: {
-			if (config.use_color) {
+			if (!config.show_terminal) {
+				continue;
+			}
+
+			if (buffer_config.use_color) {
 				set_color_at(
-				    term_buffer_backend, config.color, 9);
+				    term_buffer_backend,
+				    buffer_config.color,
+				    9);
 			}
 
 			char *term =
@@ -406,9 +455,13 @@ int main(
 		}
 
 		case 8: {
-			if (config.use_color) {
+			if (!config.show_memory) {
+				continue;
+			}
+
+			if (buffer_config.use_color) {
 				set_color_at(
-				    mem_buffer_backend, config.color, 9);
+				    mem_buffer_backend, buffer_config.color, 9);
 			}
 
 			buffer_append_int(
@@ -426,9 +479,15 @@ int main(
 		}
 
 		case 9: {
-			if (config.use_color) {
+			if (!config.show_swap) {
+				continue;
+			}
+
+			if (buffer_config.use_color) {
 				set_color_at(
-				    swap_buffer_backend, config.color, 9);
+				    swap_buffer_backend,
+				    buffer_config.color,
+				    9);
 			}
 
 			buffer_append_int(
@@ -445,15 +504,20 @@ int main(
 		}
 
 		default: {
-			if (i <= logo_height) {
-				buffer_append_char(&trail_buffer, '\n');
+			if (logo_lines_written > logo_height) {
+				struct iovec iov = {
+				    .iov_base = trailer,
+				    .iov_len = sizeof trailer};
+
+				gather_stack_push(
+				    gather_stack, &gather_stack_pointer, iov);
+
+				/* FIXME: I know … */
+				i = 100;
 			}
 		}
 		}
 	}
-
-	gather_stack_push_buffer(
-	    gather_stack, &gather_stack_pointer, trail_buffer);
 
 	writev(STDOUT_FILENO, gather_stack, gather_stack_pointer + 1);
 

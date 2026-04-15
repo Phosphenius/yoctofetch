@@ -21,7 +21,7 @@ enum color {
 	WHITE,
 };
 
-struct config {
+struct buffer_config {
 	int use_color;
 	enum color color;
 	enum logo logo;

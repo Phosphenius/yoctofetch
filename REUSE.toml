@@ -8,3 +8,10 @@ path = [
 ]
 SPDX-FileCopyrightText = "2025 Luca Kredel <luca.kredel@web.de>"
 SPDX-License-Identifier = "CC-BY-SA-4.0"
+
+[[annotations]]
+path = [
+    "etc/yoctofetch.conf",
+]
+SPDX-FileCopyrightText = "2025 Luca Kredel <luca.kredel@web.de>"
+SPDX-License-Identifier = "CC0-1.0"

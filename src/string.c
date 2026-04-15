@@ -58,3 +58,15 @@ int string_equals(struct string s1, struct string s2)
 
 	return 1;
 }
+
+unsigned long string_hash(struct string str)
+{
+	unsigned long basis = 0x100;
+
+	for (long int i = 0; i < str.length; ++i) {
+		basis ^= str.data[i] & 255;
+		basis *= 1111111111111111111;
+	}
+
+	return basis;
+}
