@@ -20,126 +20,8 @@ struct config config_from_buffer(char *buffer, int buffer_length)
 {
 	struct string map_backend[113] = {NULL};
 	struct hashmap map = {.capacity = 113, .data = map_backend};
-	int buffer_index = 0;
-	int key_len = 0;
-	char *key_start = NULL;
-	int val_len = 0;
-	char *val_start = NULL;
-	char input = 0;
 
-start:
-	if (buffer_index >= buffer_length) {
-		goto error;
-	}
-
-	key_start = &buffer[buffer_index];
-	key_len = 0;
-	input = buffer[buffer_index++];
-
-	if (((input | 32) >= 'a' && (input | 32) <= 'z') || input == '_') {
-		goto key_char;
-	} else if (input == '#') {
-		goto comment;
-	}
-
-	goto start;
-
-comment:
-	if (buffer_index >= buffer_length) {
-		goto error;
-	}
-
-	input = buffer[buffer_index++];
-
-	if (input != '\n') {
-		goto comment;
-	}
-
-	if (buffer_index + 1 >= buffer_length) {
-		goto finish;
-	} else {
-		goto start;
-	}
-
-key_char:
-	if (buffer_index >= buffer_length) {
-		goto error;
-	}
-
-	key_len++;
-	input = buffer[buffer_index++];
-
-	if (((input | 32) >= 'a' && (input | 32) <= 'z') || input == '_') {
-		goto key_char;
-	} else if (input == '=') {
-		goto equalsign;
-	}
-
-	goto start;
-
-equalsign:
-	if (buffer_index >= buffer_length) {
-		goto error;
-	}
-
-	val_start = &buffer[buffer_index];
-	input = buffer[buffer_index++];
-
-	if (input == '"') {
-		goto equalsign;
-	} else if (input >= ' ' && input <= '~') {
-		goto value_char;
-	}
-
-	goto error;
-
-value_char:
-	if (buffer_index >= buffer_length) {
-		goto error;
-	}
-
-	val_len++;
-	input = buffer[buffer_index++];
-
-	if (input == '"') {
-		goto closing_double_quote;
-	} else if (input == '\n') {
-		goto success;
-	} else if (input >= ' ' && input <= '~') {
-		goto value_char;
-	}
-
-	goto error;
-
-closing_double_quote:
-	if (buffer_index >= buffer_length) {
-		goto error;
-	}
-
-	input = buffer[buffer_index++];
-
-	if (input == '\n') {
-		goto success;
-	}
-
-	goto error;
-
-success:
-	hashmap_add(
-	    &map,
-	    (struct string){.data = key_start, .length = key_len},
-	    (struct string){.data = val_start, .length = val_len});
-
-	if (buffer_index + 1 >= buffer_length) {
-		goto finish;
-	} else {
-		val_len = 0;
-		goto start;
-	}
-
-finish:
-	struct string foo = hashmap_get_or(&map, STR("show_os"), STR(""));
-	(void)foo;
+	parse_buffer_into_hashmap(&map, buffer, buffer_length);
 
 	return (struct config){
 	    .show_os = string_equals(
@@ -160,9 +42,6 @@ finish:
 		hashmap_get_or(&map, STR("show_memory"), STR("1")), STR("1")),
 	    .show_swap = string_equals(
 		hashmap_get_or(&map, STR("show_swap"), STR("1")), STR("1"))};
-
-error:
-	return (struct config){1, 1, 1, 1, 1, 1, 1, 1, 1};
 }
 
 struct config config_from_file(const char *user)
