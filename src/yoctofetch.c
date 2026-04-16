@@ -166,6 +166,12 @@ int main(
 	    .data = swap_buffer_backend,
 	    .length = 28};
 
+	char trail_buffer_backend[32] = {0};
+	struct buffer trail_buffer = {
+	    .capacity = sizeof trail_buffer_backend,
+	    .data = trail_buffer_backend,
+	    .length = 0};
+
 	int logo_height = 0;
 
 	switch (config.logo) {
@@ -441,15 +447,14 @@ int main(
 
 		default: {
 			if (i <= logo_height) {
-				gather_stack_push(
-				    gather_stack,
-				    &gather_stack_pointer,
-				    (struct iovec){.iov_base = "\n",
-				                   .iov_len = 1});
+				buffer_append_char(&trail_buffer, '\n');
 			}
 		}
 		}
 	}
+
+	gather_stack_push_buffer(
+	    gather_stack, &gather_stack_pointer, trail_buffer);
 
 	writev(STDOUT_FILENO, gather_stack, gather_stack_pointer + 1);
 
