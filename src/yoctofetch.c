@@ -75,7 +75,7 @@ int main(
 
 	char *user = getenv_or("USER", envp, env_index_cache, "Unknown");
 
-	char os_release_buffer[1 << 12];
+	char os_release_buffer[1 << 7];
 
 	struct os_release_result os_release_res =
 	    parse_os_release(os_release_buffer, sizeof os_release_buffer);
