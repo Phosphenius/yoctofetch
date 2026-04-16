@@ -11,7 +11,7 @@ override CFLAGS = $(CFLAGS_EXTRA) $(CFLAGS_CONFIG) -ffreestanding \
 override CPPFLAGS = $(CPPFLAGS_CONFIG) -MMD -MP
 override LDFLAGS = $(LDFLAGS_CONFIG) -nostdlib
 
-$(BINNAME): src/$(BINNAME).o arch/$(ARCH)/start.o arch/$(ARCH)/syscall.o
+$(BINNAME): src/yoctofetch.o arch/$(ARCH)/start.o arch/$(ARCH)/syscall.o
 	$(CC) $(LDFLAGS) $^ -o $@ $(LOADLIBES) $(LDLIBS)
 
 .PHONY: install

@@ -14,7 +14,7 @@ CFLAGS_ALL = $(CFLAGS_EXTRA) $(CFLAGS_CONFIG) -ffreestanding \
 CPPFLAGS_ALL = $(CPPFLAGS_CONFIG) -MMD -MP
 LDFLAGS_ALL = $(LDFLAGS_CONFIG) -nostdlib
 
-src/$(BINNAME).o: src/$(BINNAME).c
+src/yoctofetch.o: src/yoctofetch.c
 	$(CC) $(CFLAGS_ALL) $(CPPFLAGS_ALL)  -c -o $@ $?
 
 arch/$(ARCH)/start.o: arch/$(ARCH)/start.S
@@ -23,5 +23,5 @@ arch/$(ARCH)/start.o: arch/$(ARCH)/start.S
 arch/$(ARCH)/syscall.o: arch/$(ARCH)/syscall.S
 	$(CC) $(CPPFLAGS_ALL) -c -o $@ $?
 
-$(BINNAME): src/$(BINNAME).o arch/$(ARCH)/start.o arch/$(ARCH)/syscall.o
+$(BINNAME): src/yoctofetch.o arch/$(ARCH)/start.o arch/$(ARCH)/syscall.o
 	$(CC) $(LDFLAGS_ALL) $? -o $@ $(LOADLIBES) $(LDLIBS)
