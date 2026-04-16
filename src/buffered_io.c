@@ -24,7 +24,6 @@ enum color {
 struct config {
 	int use_color;
 	enum color color;
-	int curr_logo_line;
 	enum logo logo;
 	int no_logo;
 };
