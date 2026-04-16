@@ -27,6 +27,9 @@ BUILD OPTIONS:
 INSTALL OPTIONS:
     --prefix=<dir>                  Set prefix path. Defaults to /usr/local/.
 
+FEATURE OPTIONS:
+    --disable-config-file           Disable config file support [enabled].
+
 OTHER:
     -h, --help                      Show this message and exit.
 EOF
@@ -49,6 +52,7 @@ cflags=${CFLAGS-}
 cppflags=${CPPFLAGS-}
 ldflags=${LDFLAGS-}
 prefix=/usr/local/
+feature_config_file=yes
 
 for arg; do
 	case "$arg" in
@@ -56,6 +60,8 @@ for arg; do
 		--build=*) build_type=${arg#*=} ;;
 		--host=*) host_type=${arg#*=} ;;
 		--prefix=*) prefix=${arg#*=} ;;
+		--disable-config-file|--enable-config-file=no) feature_config_file=no ;;
+		--enable-config-file|--enable-config-file=yes) feature_config_file=yes ;;
 		CFLAGS=*) cflags=${arg#*=} ;;
 		CPPFLAGS=*) cppflags=${arg#*=} ;;
 		LDFLAGS=*) ldflags=${arg#*=} ;;
@@ -109,6 +115,10 @@ case "$build_type" in
 	*)
 		fail "$0: Unsupported build type \"$build_type\". ";;
 esac
+
+if test "$feature_config_file" = no ; then
+	cppflags="$cppflags -DNO_CONFIG_FILE"
+fi
 
 printf "writing config.mk … "
 

@@ -16,6 +16,8 @@ struct config {
 	int show_swap;
 };
 
+#ifndef NO_CONFIG_FILE
+
 struct config config_from_buffer(char *buffer, int buffer_length)
 {
 	struct string map_backend[113] = {NULL};
@@ -100,3 +102,5 @@ alternative_file:
 error:
 	return (struct config){1, 1, 1, 1, 1, 1, 1, 1, 1};
 }
+
+#endif
