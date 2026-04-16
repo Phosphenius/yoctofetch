@@ -86,7 +86,6 @@ int main(
 
 	struct config config = {
 	    .color = GREEN,
-	    .curr_logo_line = 0,
 	    .logo = LOGO_NONE,
 	    .use_color = use_color};
 
