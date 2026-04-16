@@ -269,6 +269,7 @@ int main(
 
 		case 2: {
 			if (!config.show_host) {
+				delay_logo = 1;
 				continue;
 			}
 
@@ -323,6 +324,7 @@ int main(
 
 		case 3: {
 			if (!config.show_kernel) {
+				delay_logo = 1;
 				continue;
 			}
 
@@ -351,6 +353,7 @@ int main(
 
 		case 4: {
 			if (!config.show_uptime) {
+				delay_logo = 1;
 				continue;
 			}
 
@@ -371,6 +374,7 @@ int main(
 
 		case 5: {
 			if (!config.show_shell) {
+				delay_logo = 1;
 				continue;
 			}
 
@@ -400,6 +404,7 @@ int main(
 
 		case 6: {
 			if (!config.show_desktop) {
+				delay_logo = 1;
 				continue;
 			}
 
@@ -432,6 +437,7 @@ int main(
 
 		case 7: {
 			if (!config.show_terminal) {
+				delay_logo = 1;
 				continue;
 			}
 
@@ -456,6 +462,7 @@ int main(
 
 		case 8: {
 			if (!config.show_memory) {
+				delay_logo = 1;
 				continue;
 			}
 
@@ -480,6 +487,7 @@ int main(
 
 		case 9: {
 			if (!config.show_swap) {
+				delay_logo = 1;
 				continue;
 			}
 
@@ -504,14 +512,12 @@ int main(
 		}
 
 		default: {
+			struct iovec iov = {
+			    .iov_base = trailer, .iov_len = sizeof trailer};
+
+			gather_stack_push(
+			    gather_stack, &gather_stack_pointer, iov);
 			if (logo_lines_written > logo_height) {
-				struct iovec iov = {
-				    .iov_base = trailer,
-				    .iov_len = sizeof trailer};
-
-				gather_stack_push(
-				    gather_stack, &gather_stack_pointer, iov);
-
 				/* FIXME: I know … */
 				i = 100;
 			}
