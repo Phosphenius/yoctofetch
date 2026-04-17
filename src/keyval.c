@@ -99,7 +99,7 @@ void find_keyvals_in_buffer(
 			} else {
 				for (int64_t j = 0; j < size; ++j) {
 					if ((keyvals[j].flags ^
-					      KEYVAL_CANDIDATE)) {
+					     KEYVAL_CANDIDATE)) {
 						continue;
 					}
 
@@ -156,15 +156,11 @@ void find_keyvals_in_buffer(
 	}
 }
 
-
 void keyvals_from_envp(
-    struct keyval *keyvals,
-    char *envp[],
-    struct index_list *index_list)
+    struct keyval *keyvals, char *envp[], struct index_list *index_list)
 {
-	int64_t index_map[] = {0, 0, 0, 0, 0, 0, 0, 0, 0,
-	                         0, 0, 0, 0, 1,  0, 0, 0, 0,
-	                         2,  3,  4,  0, 0, 5,  0, 0};
+	int64_t index_map[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	                       1, 0, 0, 0, 0, 2, 3, 4, 0, 0, 5, 0, 0};
 
 	for (int64_t i = 0; envp[i] != NULL; ++i) {
 		char first = envp[i][0];

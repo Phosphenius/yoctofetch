@@ -97,12 +97,14 @@ int main(
 	};
 
 	struct index_list i_list[] = {
-		{.len = 1, .list = (int64_t[]){ENV_NO_COLOR}},
-		{.len = 1, .list = (int64_t[]){ENV_SHELL}},
-		{.len = 1, .list = (int64_t[]){ENV_TERM}},
-		{.len = 1, .list = (int64_t[]){ENV_USER}},
-		{.len = 2, .list = (int64_t[]){ENV_XDG_CURRENT_DESKTOP, ENV_XDG_SESSION_TYPE}}
-	};
+	    {.len = 1, .list = (int64_t[]){ENV_NO_COLOR}                   },
+	    {.len = 1, .list = (int64_t[]){ENV_SHELL}                      },
+	    {.len = 1, .list = (int64_t[]){ENV_TERM}                       },
+	    {.len = 1, .list = (int64_t[]){ENV_USER}                       },
+	    {.len = 2,
+	     .list =
+	         (int64_t[]){ENV_XDG_CURRENT_DESKTOP, ENV_XDG_SESSION_TYPE}}
+        };
 
 	keyvals_from_envp(env_keyvals, envp, i_list);
 
