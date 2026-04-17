@@ -20,33 +20,44 @@ struct config {
 
 struct config config_from_buffer(char *buffer, int buffer_length)
 {
-	struct string map_backend[113] = {NULL};
-	struct hashmap map = {.capacity = 113, .data = map_backend};
+	struct keyval keyvals[10] = {NULL};
+	int found[10] = {0};
 
-	parse_buffer_into_hashmap(&map, buffer, buffer_length);
+	find_keyvals_in_buffer(keyvals, 10, buffer, buffer_length);
 
 	return (struct config){
 	    .show_os = string_equals(
-		hashmap_get_or(&map, STR("show_os"), STR("1")), STR("1")),
+		keyval_get_or(keyvals, 10, STR("show_os"), STR("1"), found),
+		STR("1")),
 	    .show_host = string_equals(
-		hashmap_get_or(&map, STR("show_host"), STR("1")), STR("1")),
+		keyval_get_or(keyvals, 10, STR("show_host"), STR("1"), found),
+		STR("1")),
 	    .show_kernel = string_equals(
-		hashmap_get_or(&map, STR("show_kernel"), STR("1")), STR("1")),
+		keyval_get_or(keyvals, 10, STR("show_kernel"), STR("1"), found),
+		STR("1")),
 	    .show_uptime = string_equals(
-		hashmap_get_or(&map, STR("show_uptime"), STR("1")), STR("1")),
+		keyval_get_or(keyvals, 10, STR("show_uptime"), STR("1"), found),
+		STR("1")),
 	    .show_shell = string_equals(
-		hashmap_get_or(&map, STR("show_shell"), STR("1")), STR("1")),
+		keyval_get_or(keyvals, 10, STR("show_shell"), STR("1"), found),
+		STR("1")),
 	    .show_desktop = string_equals(
-		hashmap_get_or(&map, STR("show_desktop"), STR("1")), STR("1")),
+		keyval_get_or(
+		    keyvals, 10, STR("show_desktop"), STR("1"), found),
+		STR("1")),
 	    .show_terminal = string_equals(
-		hashmap_get_or(&map, STR("show_terminal"), STR("1")), STR("1")),
+		keyval_get_or(
+		    keyvals, 10, STR("show_terminal"), STR("1"), found),
+		STR("1")),
 	    .show_memory = string_equals(
-		hashmap_get_or(&map, STR("show_memory"), STR("1")), STR("1")),
+		keyval_get_or(keyvals, 10, STR("show_memory"), STR("1"), found),
+		STR("1")),
 	    .show_swap = string_equals(
-		hashmap_get_or(&map, STR("show_swap"), STR("1")), STR("1"))};
+		keyval_get_or(keyvals, 10, STR("show_swap"), STR("1"), found),
+		STR("1"))};
 }
 
-struct config config_from_file(const char *user)
+struct config config_from_file(struct string user)
 {
 	char buf[1 << 8];
 
@@ -66,13 +77,11 @@ struct config config_from_file(const char *user)
 
 alternative_file:
 
-	int user_str_len = strlen(user);
-
 	char user_config_path[255] = "/home/";
 	int offset = 6;
 
-	for (int i = 0; i < user_str_len && i < 255; ++i) {
-		user_config_path[offset++] = user[i];
+	for (int i = 0; i < user.length && i < 255; ++i) {
+		user_config_path[offset++] = user.data[i];
 	}
 
 	char remaining_path[] = "/.config/yoctofetch/yoctofetch.conf";

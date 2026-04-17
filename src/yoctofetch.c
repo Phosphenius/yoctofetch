@@ -16,14 +16,14 @@
 
 #include "gather_io.c"
 
-#include "buffer.c"
 #include "logos.c"
 #include "string.c"
+
+#include "keyval.c"
 
 #include "buffered_io.c"
 #include "env.c"
 #include "file_io.c"
-#include "hashmap.c"
 #include "os_release.c"
 #include "sysinfo.c"
 #include "uname.c"
@@ -33,6 +33,15 @@
 enum {
 	FILE_BUF_LEN = 1 << 9,
 	GATHER_STACK_LENGTH = 32,
+};
+
+enum {
+	ENV_USER = 0,
+	ENV_SHELL,
+	ENV_NO_COLOR,
+	ENV_XDG_CURRENT_DESKTOP,
+	ENV_XDG_SESSION_TYPE,
+	ENV_TERM,
 };
 
 void gather_stack_push(
@@ -72,16 +81,30 @@ int main(
 		return -1;
 	}
 
-	struct env_index_cache_entry
-	    env_index_cache[NUM_ENV_INDEX_CACHE_ENTRIES] = {0};
-	populate_env_cache(envp, env_index_cache);
+	struct keyval env_keyvals[] = {
+	    [ENV_USER] = {.key = STR_INIT("USER"),                .val = STR_INIT("Unknown")},
+	    [ENV_SHELL] =
+		{.key = STR_INIT("SHELL"),               .val = STR_INIT("Unknown")},
+	    [ENV_NO_COLOR] = {.key = STR_INIT("NO_COLOR"),            .val = STR_INIT("")       },
+	    [ENV_XDG_CURRENT_DESKTOP] =
+		{.key = STR_INIT("XDG_CURRENT_DESKTOP"),
+	                  .val = STR_INIT("Unknown")                                        },
+	    [ENV_XDG_SESSION_TYPE] =
+		{.key = STR_INIT("XDG_SESSION_TYPE"),
+	                  .val = STR_INIT("Unknown")                                        },
+	    [ENV_TERM] = {.key = STR_INIT("TERM"),                .val = STR_INIT("Unknown")},
+	};
 
-	char *user = getenv_or("USER", envp, env_index_cache, "Unknown");
+	const int env_keyvals_len = sizeof env_keyvals / sizeof env_keyvals[0];
+
+	keyvals_from_envp(env_keyvals, env_keyvals_len, envp);
+
+	struct string user = env_keyvals[ENV_USER].val;
 
 #ifndef NO_CONFIG_FILE
 	struct config config = config_from_file(user);
 #else
-	struct config config = {1,1,1,1,1,1,1,1,1};
+	struct config config = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 #endif
 
 	char os_release_buffer[1 << 9];
@@ -91,7 +114,7 @@ int main(
 
 	int use_color = 1;
 
-	use_color = getenv_or("NO_COLOR", envp, env_index_cache, NULL) == NULL;
+	use_color = string_equals(env_keyvals[ENV_NO_COLOR].val, STR(""));
 
 	struct buffer_config buffer_config = {
 	    .color = GREEN, .logo = LOGO_NONE, .use_color = use_color};
@@ -235,7 +258,7 @@ int main(
 
 		switch (i) {
 		case 0: {
-			buffer_append(&user_at_host_buffer, user, strlen(user));
+			buffer_append_string(&user_at_host_buffer, user);
 			buffer_append_char(&user_at_host_buffer, '@');
 			buffer_append(
 			    &user_at_host_buffer,
@@ -389,15 +412,10 @@ int main(
 				    9);
 			}
 
-			char *shell_raw =
-			    getenv_or("SHELL", envp, env_index_cache, NULL);
-			char *shell = trim_shell(shell_raw);
+			struct string shell_raw = env_keyvals[ENV_SHELL].val;
+			struct string shell = trim_shell(shell_raw);
 
-			if (shell == NULL) {
-				shell = "Unknown";
-			}
-
-			buffer_append(&shell_buffer, shell, strlen(shell));
+			buffer_append_string(&shell_buffer, shell);
 			buffer_append_char(&shell_buffer, '\n');
 
 			gather_stack_push_buffer(
@@ -416,21 +434,16 @@ int main(
 				set_color_at(
 				    wm_buffer_backend, buffer_config.color, 9);
 			}
-			char *wm = getenv_or(
-			    "XDG_CURRENT_DESKTOP",
-			    envp,
-			    env_index_cache,
-			    "Unknown");
 
-			char *session = getenv_or(
-			    "XDG_SESSION_TYPE",
-			    envp,
-			    env_index_cache,
-			    "Unknown");
+			struct string wm =
+			    env_keyvals[ENV_XDG_CURRENT_DESKTOP].val;
 
-			buffer_append(&wm_buffer, wm, strlen(wm));
+			struct string session =
+			    env_keyvals[ENV_XDG_SESSION_TYPE].val;
+
+			buffer_append_string(&wm_buffer, wm);
 			buffer_append_string(&wm_buffer, STR(" ("));
-			buffer_append(&wm_buffer, session, strlen(session));
+			buffer_append_string(&wm_buffer, session);
 			buffer_append_string(&wm_buffer, STR(")\n"));
 
 			gather_stack_push_buffer(
@@ -452,10 +465,9 @@ int main(
 				    9);
 			}
 
-			char *term =
-			    getenv_or("TERM", envp, env_index_cache, "Unknown");
+			struct string term = env_keyvals[ENV_TERM].val;
 
-			buffer_append(&term_buffer, term, strlen(term));
+			buffer_append_string(&term_buffer, term);
 			buffer_append_char(&term_buffer, '\n');
 
 			gather_stack_push_buffer(

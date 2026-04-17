@@ -25,8 +25,16 @@ struct os_release_result parse_os_release(char *buf, int buf_len)
 		goto error;
 	}
 
-	struct string id = find_in_buffer(STR("id"), buf, buf_len);
-	struct string name = find_in_buffer(STR("name"), buf, buf_len);
+	struct keyval keyvals[10] = {NULL};
+	int found[10] = {0};
+
+	find_keyvals_in_buffer(keyvals, 10, buf, buf_len);
+
+	struct string id =
+	    keyval_get_or(keyvals, 10, STR("ID"), STR("Unknown"), found);
+	struct string name =
+	    keyval_get_or(keyvals, 10, STR("NAME"), STR("Unknown"), found);
+
 	struct os_release_result result = {.name = name, .id = id};
 
 	return result;
