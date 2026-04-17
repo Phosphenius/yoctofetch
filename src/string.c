@@ -50,7 +50,7 @@ int string_equals(struct string s1, struct string s2)
 	}
 
 	/* TODO: Superfluous if we had `memcmp` */
-	for (long int i = 0; i < s1.length; ++i) {
+	for (int64_t i = 0; i < s1.length; ++i) {
 		if (s1.data[i] != s2.data[i]) {
 			return 0;
 		}
@@ -63,7 +63,7 @@ unsigned long string_hash(struct string str)
 {
 	unsigned long basis = 0x100;
 
-	for (long int i = 0; i < str.length; ++i) {
+	for (int64_t i = 0; i < str.length; ++i) {
 		basis ^= str.data[i] & 255;
 		basis *= 1111111111111111111;
 	}

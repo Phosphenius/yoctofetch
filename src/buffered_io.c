@@ -6,8 +6,8 @@
 
 struct buffer {
 	char *data;
-	long int capacity;
-	long int length;
+	int64_t capacity;
+	int64_t length;
 };
 
 enum color {
@@ -22,13 +22,13 @@ enum color {
 };
 
 struct buffer_config {
-	int use_color;
+	int64_t use_color;
 	enum color color;
 	enum logo logo;
-	int no_logo;
+	int64_t no_logo;
 };
 
-void set_color_at(char *buffer, enum color color, int pos)
+void set_color_at(char *buffer, enum color color, int64_t pos)
 {
 	char color_char = '9'; /* Default color */
 
@@ -66,12 +66,12 @@ void set_color_at(char *buffer, enum color color, int pos)
 /* Heavily inspired by https://nullprogram.com/blog/2023/02/13/ */
 
 void buffer_append(
-    struct buffer *restrict buffer, const char *restrict data, long int length)
+    struct buffer *restrict buffer, const char *restrict data, int64_t length)
 {
-	long int available = buffer->capacity - buffer->length;
-	long int amount = available < length ? available : length;
+	int64_t available = buffer->capacity - buffer->length;
+	int64_t amount = available < length ? available : length;
 
-	for (long int i = 0; i < amount; ++i) {
+	for (int64_t i = 0; i < amount; ++i) {
 		buffer->data[buffer->length + i] = data[i];
 	}
 
@@ -88,7 +88,7 @@ void buffer_append_char(struct buffer *buffer, char data)
 	buffer_append(buffer, &data, 1);
 }
 
-void buffer_append_int(struct buffer *buffer, int value)
+void buffer_append_int(struct buffer *buffer, int64_t value)
 {
 	char tmp[64];
 	char *end = tmp + sizeof tmp;
@@ -104,8 +104,8 @@ void buffer_append_int(struct buffer *buffer, int value)
 void buffer_append_uptime(struct buffer *buffer, long uptime)
 {
 	float uptime_mins = uptime / 60;
-	int uptime_hrs = 0;
-	int uptime_days = 0;
+	int64_t uptime_hrs = 0;
+	int64_t uptime_days = 0;
 
 	while (uptime_mins >= (24 * 60)) {
 		uptime_mins -= (24 * 60);

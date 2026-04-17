@@ -7,6 +7,7 @@
 #define O_RDONLY 0
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include "types.h"
 
@@ -45,7 +46,7 @@ enum {
 };
 
 void gather_stack_push(
-    struct iovec *stack, int *stack_pointer, struct iovec value)
+    struct iovec *stack, int64_t *stack_pointer, struct iovec value)
 {
 	if ((*stack_pointer) + 1 >= GATHER_STACK_LENGTH) {
 		/* Output will simply be truncated if stack is full. */
@@ -56,7 +57,7 @@ void gather_stack_push(
 }
 
 void gather_stack_push_buffer(
-    struct iovec *stack, int *stack_pointer, struct buffer buffer)
+    struct iovec *stack, int64_t *stack_pointer, struct buffer buffer)
 {
 	gather_stack_push(
 	    stack,
@@ -70,7 +71,7 @@ int main(
     char *envp[])
 {
 	struct iovec gather_stack[GATHER_STACK_LENGTH] = {0};
-	int gather_stack_pointer = 0;
+	int64_t gather_stack_pointer = 0;
 
 	struct utsname uts = {0};
 	struct sysinfo info = {0};
@@ -112,7 +113,7 @@ int main(
 	struct os_release_result os_release_res =
 	    parse_os_release(os_release_buffer, sizeof os_release_buffer);
 
-	int use_color = 1;
+	int64_t use_color = 1;
 
 	use_color = string_equals(env_keyvals[ENV_NO_COLOR].val, STR(""));
 
@@ -195,7 +196,7 @@ int main(
 	    .data = swap_buffer_backend,
 	    .length = 28};
 
-	int logo_height = 0;
+	int64_t logo_height = 0;
 
 	switch (buffer_config.logo) {
 	case LOGO_NONE:
@@ -209,11 +210,11 @@ int main(
 		break;
 	};
 
-	int delay_logo = 0;
-	int logo_lines_written = 0;
+	int64_t delay_logo = 0;
+	int64_t logo_lines_written = 0;
 	char trailer[] = "\033[0m\n";
 
-	for (int i = 0; i < 30; ++i) {
+	for (int64_t i = 0; i < 30; ++i) {
 		if (logo_lines_written <= logo_height && !delay_logo) {
 			struct iovec iov = {0};
 

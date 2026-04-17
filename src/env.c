@@ -6,7 +6,7 @@
 
 struct string trim_shell(struct string shell_raw)
 {
-	for (long int i = 0; i < shell_raw.length - 5; ++i) {
+	for (int64_t i = 0; i < shell_raw.length - 5; ++i) {
 		if (shell_raw.data[i] != '/') {
 			continue;
 		}

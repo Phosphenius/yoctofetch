@@ -16,7 +16,7 @@ struct keyval {
 };
 
 void find_keyvals_in_buffer(
-    struct keyval *keyvals, int size, char *buffer, int buffer_length)
+    struct keyval *keyvals, int64_t size, char *buffer, int64_t buffer_length)
 {
 	enum state {
 		start,
@@ -28,16 +28,16 @@ void find_keyvals_in_buffer(
 	} state = start;
 
 	char *val_beg = NULL;
-	int val_len = 0;
+	int64_t val_len = 0;
 
-	int key_index = 0;
+	int64_t key_index = 0;
 
-	int num_candidates = 0;
-	int propable_candidate_index = 0;
+	int64_t num_candidates = 0;
+	int64_t propable_candidate_index = 0;
 
 	char input = 0;
 
-	for (int i = 0; i < buffer_length; ++i) {
+	for (int64_t i = 0; i < buffer_length; ++i) {
 		input = buffer[i];
 
 		switch (state) {
@@ -59,7 +59,7 @@ void find_keyvals_in_buffer(
 
 			state = wait;
 
-			for (int j = 0; j < size; ++j) {
+			for (int64_t j = 0; j < size; ++j) {
 				if (keyvals[j].flags & KEYVAL_FILLED) {
 					continue;
 				}
@@ -92,7 +92,7 @@ void find_keyvals_in_buffer(
 				key_index = 0;
 				state = start;
 			} else {
-				for (int j = 0; j < size; ++j) {
+				for (int64_t j = 0; j < size; ++j) {
 					if (!(keyvals[j].flags &
 					      KEYVAL_CANDIDATE)) {
 						continue;

@@ -16,17 +16,17 @@ struct fd_result {
 };
 
 struct io_result {
-	int ok;
+	int64_t ok;
 
 	union {
-		long int n_bytes;
-		int errno;
+		int64_t n_bytes;
+		int64_t errno;
 	};
 };
 
 struct string {
 	const char *data;
-	long int length;
+	int64_t length;
 };
 
 #define STR(cstring) \

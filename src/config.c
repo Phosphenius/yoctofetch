@@ -5,15 +5,15 @@
  */
 
 struct config {
-	int show_os;
-	int show_host;
-	int show_kernel;
-	int show_uptime;
-	int show_shell;
-	int show_desktop;
-	int show_terminal;
-	int show_memory;
-	int show_swap;
+	int64_t show_os;
+	int64_t show_host;
+	int64_t show_kernel;
+	int64_t show_uptime;
+	int64_t show_shell;
+	int64_t show_desktop;
+	int64_t show_terminal;
+	int64_t show_memory;
+	int64_t show_swap;
 };
 
 #ifndef NO_CONFIG_FILE
@@ -30,7 +30,7 @@ enum {
 	CONFIG_SHOW_SWAP,
 };
 
-struct config config_from_buffer(char *buffer, int buffer_length)
+struct config config_from_buffer(char *buffer, int64_t buffer_length)
 {
 	struct keyval keyvals[] = {
 	    [CONFIG_SHOW_OS] =
@@ -53,7 +53,7 @@ struct config config_from_buffer(char *buffer, int buffer_length)
 				  .key = STR_INIT("show_swap"),     .val = STR_INIT("1")}
         };
 
-	const int keyvals_len = sizeof keyvals / sizeof keyvals[0];
+	const int64_t keyvals_len = sizeof keyvals / sizeof keyvals[0];
 
 	find_keyvals_in_buffer(keyvals, keyvals_len, buffer, buffer_length);
 
@@ -81,16 +81,16 @@ struct config config_from_file(struct string user)
 	char buf[1 << 8];
 
 	char user_config_path[255] = "/home/";
-	int offset = 6;
+	int64_t offset = 6;
 
-	for (int i = 0; i < user.length && i < 255; ++i) {
+	for (int64_t i = 0; i < user.length && i < 255; ++i) {
 		user_config_path[offset++] = user.data[i];
 	}
 
 	char remaining_path[] = "/.config/yoctofetch/yoctofetch.conf";
-	int remaining_path_len = sizeof remaining_path;
+	int64_t remaining_path_len = sizeof remaining_path;
 
-	int available = 255 - (offset + 1);
+	int64_t available = 255 - (offset + 1);
 
 	if (remaining_path_len > available) {
 		goto error;

@@ -14,7 +14,7 @@ enum {
 	OS_RELEAES_NAME,
 };
 
-struct os_release_result parse_os_release(char *buf, int buf_len)
+struct os_release_result parse_os_release(char *buf, int64_t buf_len)
 {
 	const char os_release_path[] = "/etc/os-release";
 
@@ -37,7 +37,7 @@ struct os_release_result parse_os_release(char *buf, int buf_len)
 				 .key = STR_INIT("NAME"), .val = STR_INIT("Unknown")}
         };
 
-	const int keyvals_len = sizeof keyvals / sizeof keyvals[0];
+	const int64_t keyvals_len = sizeof keyvals / sizeof keyvals[0];
 
 	find_keyvals_in_buffer(keyvals, keyvals_len, buf, buf_len);
 
