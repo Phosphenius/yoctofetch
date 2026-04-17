@@ -96,9 +96,15 @@ int main(
 	    [ENV_TERM] = {.key = STR_INIT("TERM"),                .val = STR_INIT("Unknown")},
 	};
 
-	const int env_keyvals_len = sizeof env_keyvals / sizeof env_keyvals[0];
+	struct index_list i_list[] = {
+		{.len = 1, .list = (int64_t[]){ENV_NO_COLOR}},
+		{.len = 1, .list = (int64_t[]){ENV_SHELL}},
+		{.len = 1, .list = (int64_t[]){ENV_TERM}},
+		{.len = 1, .list = (int64_t[]){ENV_USER}},
+		{.len = 2, .list = (int64_t[]){ENV_XDG_CURRENT_DESKTOP, ENV_XDG_SESSION_TYPE}}
+	};
 
-	keyvals_from_envp(env_keyvals, env_keyvals_len, envp);
+	keyvals_from_envp(env_keyvals, envp, i_list);
 
 	struct string user = env_keyvals[ENV_USER].val;
 

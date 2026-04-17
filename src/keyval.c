@@ -12,7 +12,12 @@ enum {
 struct keyval {
 	struct string key;
 	struct string val;
-	int flags;
+	uint64_t flags;
+};
+
+struct index_list {
+	int64_t len;
+	int64_t *list;
 };
 
 void find_keyvals_in_buffer(
@@ -151,45 +156,47 @@ void find_keyvals_in_buffer(
 	}
 }
 
-void keyvals_from_envp(struct keyval *keyvals, int size, char *envp[])
+
+void keyvals_from_envp(
+    struct keyval *keyvals,
+    char *envp[],
+    struct index_list *index_list)
 {
-	for (int i = 0; envp[i] != NULL; ++i) {
+	int64_t index_map[] = {0, 0, 0, 0, 0, 0, 0, 0, 0,
+	                         0, 0, 0, 0, 1,  0, 0, 0, 0,
+	                         2,  3,  4,  0, 0, 5,  0, 0};
+
+	for (int64_t i = 0; envp[i] != NULL; ++i) {
 		char first = envp[i][0];
 
-		if (first != 'N' && first != 'S' && first != 'T' &&
-		    first != 'U' && first != 'X') {
+		int64_t mapped_index = (first | 32) - 97;
+		mapped_index =
+		    mapped_index * (mapped_index >= 0 && mapped_index <= 25);
+		mapped_index = index_map[mapped_index] - 1;
+
+		if (mapped_index == -1) {
 			continue;
 		}
 
-		for (int k = 0; k < size; ++k) {
-			if (keyvals[k].flags & KEYVAL_FILLED) {
+		for (int64_t k = 0; k < index_list[mapped_index].len; ++k) {
+			int64_t l = index_list[mapped_index].list[k];
+			if (keyvals[l].flags & KEYVAL_FILLED) {
 				continue;
 			}
 
-			if (first == keyvals[k].key.data[0]) {
-				keyvals[k].flags |= KEYVAL_CANDIDATE;
-			}
-		}
-
-		for (int k = 0; k < size; ++k) {
-			if (!(keyvals[k].flags & KEYVAL_CANDIDATE)) {
-				continue;
-			}
-
-			for (int j = 0;
-			     envp[i][j] != '\0' && j < keyvals[k].key.length;
+			for (int64_t j = 0;
+			     envp[i][j] != '\0' && j < keyvals[l].key.length;
 			     ++j) {
-				if (envp[i][j] != keyvals[k].key.data[j]) {
-					keyvals[k].flags &= ~KEYVAL_CANDIDATE;
+				if (envp[i][j] != keyvals[l].key.data[j]) {
 					break;
 				}
 
-				if (j + 1 == keyvals[k].key.length &&
+				if (j + 1 == keyvals[l].key.length &&
 				    envp[i][j + 1] != '\0' &&
 				    envp[i][j + 1] == '=' &&
 				    envp[i][j + 2] != '\0') {
-					keyvals[k].flags |= KEYVAL_FILLED;
-					keyvals[k].val = (struct string){
+					keyvals[l].flags |= KEYVAL_FILLED;
+					keyvals[l].val = (struct string){
 					    .data = envp[i] + j + 2,
 					    .length =
 						strlen(envp[i]) - (j + 2)};
