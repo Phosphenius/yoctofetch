@@ -76,11 +76,8 @@ int main(
 	struct utsname uts = {0};
 	struct sysinfo info = {0};
 
-	/* In theory, these should never fail, but let’s test them anyways and
-	 * just exit in case the impossible happens … */
-	if (uname(&uts) != 0 || sysinfo(&info) != 0) {
-		return -1;
-	}
+	uname(&uts);
+	sysinfo(&info);
 
 	struct keyval env_keyvals[] = {
 	    [ENV_USER] = {.key = STR_INIT("USER"),                .val = STR_INIT("Unknown")},
