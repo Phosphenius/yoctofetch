@@ -98,7 +98,7 @@ void find_keyvals_in_buffer(
 				state = start;
 			} else {
 				for (int64_t j = 0; j < size; ++j) {
-					if (!(keyvals[j].flags &
+					if ((keyvals[j].flags ^
 					      KEYVAL_CANDIDATE)) {
 						continue;
 					}
