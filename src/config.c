@@ -80,22 +80,6 @@ struct config config_from_file(struct string user)
 {
 	char buf[1 << 8];
 
-	struct fd_result fd_res = open("/etc/yoctofetch.conf", O_RDONLY);
-
-	if (!fd_res.ok) {
-		goto alternative_file;
-	}
-
-	struct io_result read_res = read(fd_res.fd, buf, 1 << 8);
-
-	if (!read_res.ok) {
-		goto error;
-	}
-
-	return config_from_buffer(buf, read_res.n_bytes);
-
-alternative_file:
-
 	char user_config_path[255] = "/home/";
 	int offset = 6;
 
@@ -114,7 +98,23 @@ alternative_file:
 
 	memcpy(&user_config_path[offset], remaining_path, remaining_path_len);
 
-	fd_res = open(user_config_path, O_RDONLY);
+	struct fd_result fd_res = open(user_config_path, O_RDONLY);
+
+	if (!fd_res.ok) {
+		goto alternative_file;
+	}
+
+	struct io_result read_res = read(fd_res.fd, buf, 1 << 8);
+
+	if (!read_res.ok) {
+		goto error;
+	}
+
+	return config_from_buffer(buf, read_res.n_bytes);
+
+alternative_file:
+
+	fd_res = open("/etc/yoctofetch.conf", O_RDONLY);
 
 	if (!fd_res.ok) {
 		goto error;
