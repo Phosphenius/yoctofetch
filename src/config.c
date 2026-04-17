@@ -18,43 +18,62 @@ struct config {
 
 #ifndef NO_CONFIG_FILE
 
+enum {
+	CONFIG_SHOW_OS = 0,
+	CONFIG_SHOW_HOST,
+	CONFIG_SHOW_KERNEL,
+	CONFIG_SHOW_UPTIME,
+	CONFIG_SHOW_SHELL,
+	CONFIG_SHOW_DESKTOP,
+	CONFIG_SHOW_TERMINAL,
+	CONFIG_SHOW_MEMORY,
+	CONFIG_SHOW_SWAP,
+};
+
 struct config config_from_buffer(char *buffer, int buffer_length)
 {
-	struct keyval keyvals[10] = {NULL};
-	int found[10] = {0};
+	struct keyval keyvals[] = {
+	    [CONFIG_SHOW_OS] =
+		{.key = STR_INIT("show_os"),       .val = STR_INIT("1")},
+	    [CONFIG_SHOW_HOST] =
+		{.key = STR_INIT("show_host"),     .val = STR_INIT("1")},
+	    [CONFIG_SHOW_KERNEL] =
+		{.key = STR_INIT("show_kernel"),   .val = STR_INIT("1")},
+	    [CONFIG_SHOW_UPTIME] =
+		{.key = STR_INIT("show_uptime"),   .val = STR_INIT("1")},
+	    [CONFIG_SHOW_SHELL] =
+		{.key = STR_INIT("show_shell"),    .val = STR_INIT("1")},
+	    [CONFIG_SHOW_DESKTOP] =
+		{.key = STR_INIT("show_desktop"),  .val = STR_INIT("1")},
+	    [CONFIG_SHOW_TERMINAL] =
+		{.key = STR_INIT("show_terminal"), .val = STR_INIT("1")},
+	    [CONFIG_SHOW_MEMORY] =
+		{.key = STR_INIT("show_memory"),   .val = STR_INIT("1")},
+	    [CONFIG_SHOW_SWAP] = {
+				  .key = STR_INIT("show_swap"),     .val = STR_INIT("1")}
+        };
 
-	find_keyvals_in_buffer(keyvals, 10, buffer, buffer_length);
+	const int keyvals_len = sizeof keyvals / sizeof keyvals[0];
+
+	find_keyvals_in_buffer(keyvals, keyvals_len, buffer, buffer_length);
 
 	return (struct config){
-	    .show_os = string_equals(
-		keyval_get_or(keyvals, 10, STR("show_os"), STR("1"), found),
-		STR("1")),
-	    .show_host = string_equals(
-		keyval_get_or(keyvals, 10, STR("show_host"), STR("1"), found),
-		STR("1")),
-	    .show_kernel = string_equals(
-		keyval_get_or(keyvals, 10, STR("show_kernel"), STR("1"), found),
-		STR("1")),
-	    .show_uptime = string_equals(
-		keyval_get_or(keyvals, 10, STR("show_uptime"), STR("1"), found),
-		STR("1")),
-	    .show_shell = string_equals(
-		keyval_get_or(keyvals, 10, STR("show_shell"), STR("1"), found),
-		STR("1")),
-	    .show_desktop = string_equals(
-		keyval_get_or(
-		    keyvals, 10, STR("show_desktop"), STR("1"), found),
-		STR("1")),
-	    .show_terminal = string_equals(
-		keyval_get_or(
-		    keyvals, 10, STR("show_terminal"), STR("1"), found),
-		STR("1")),
-	    .show_memory = string_equals(
-		keyval_get_or(keyvals, 10, STR("show_memory"), STR("1"), found),
-		STR("1")),
-	    .show_swap = string_equals(
-		keyval_get_or(keyvals, 10, STR("show_swap"), STR("1"), found),
-		STR("1"))};
+	    .show_os = string_equals(keyvals[CONFIG_SHOW_OS].val, STR("1")),
+	    .show_host = string_equals(keyvals[CONFIG_SHOW_HOST].val, STR("1")),
+	    .show_kernel =
+		string_equals(keyvals[CONFIG_SHOW_KERNEL].val, STR("1")),
+	    .show_uptime =
+		string_equals(keyvals[CONFIG_SHOW_UPTIME].val, STR("1")),
+	    .show_shell =
+		string_equals(keyvals[CONFIG_SHOW_SHELL].val, STR("1")),
+	    .show_desktop =
+		string_equals(keyvals[CONFIG_SHOW_DESKTOP].val, STR("1")),
+	    .show_terminal =
+		string_equals(keyvals[CONFIG_SHOW_TERMINAL].val, STR("1")),
+	    .show_memory =
+		string_equals(keyvals[CONFIG_SHOW_MEMORY].val, STR("1")),
+	    .show_swap =
+		string_equals(keyvals[CONFIG_SHOW_SWAP].val, STR("1"))};
 }
 
 struct config config_from_file(struct string user)

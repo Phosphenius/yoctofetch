@@ -9,6 +9,11 @@ struct os_release_result {
 	struct string id;
 };
 
+enum {
+	OS_RELEAES_ID = 0,
+	OS_RELEAES_NAME,
+};
+
 struct os_release_result parse_os_release(char *buf, int buf_len)
 {
 	const char os_release_path[] = "/etc/os-release";
@@ -25,17 +30,20 @@ struct os_release_result parse_os_release(char *buf, int buf_len)
 		goto error;
 	}
 
-	struct keyval keyvals[10] = {NULL};
-	int found[10] = {0};
+	struct keyval keyvals[] = {
+	    [OS_RELEAES_ID] =
+		{.key = STR_INIT("ID"),   .val = STR_INIT("Unknown")},
+	    [OS_RELEAES_NAME] = {
+				 .key = STR_INIT("NAME"), .val = STR_INIT("Unknown")}
+        };
 
-	find_keyvals_in_buffer(keyvals, 10, buf, buf_len);
+	const int keyvals_len = sizeof keyvals / sizeof keyvals[0];
 
-	struct string id =
-	    keyval_get_or(keyvals, 10, STR("ID"), STR("Unknown"), found);
-	struct string name =
-	    keyval_get_or(keyvals, 10, STR("NAME"), STR("Unknown"), found);
+	find_keyvals_in_buffer(keyvals, keyvals_len, buf, buf_len);
 
-	struct os_release_result result = {.name = name, .id = id};
+	struct os_release_result result = {
+	    .name = keyvals[OS_RELEAES_NAME].val,
+	    .id = keyvals[OS_RELEAES_ID].val};
 
 	return result;
 

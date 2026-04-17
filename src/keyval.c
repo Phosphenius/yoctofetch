@@ -7,7 +7,9 @@
 struct keyval {
 	struct string key;
 	struct string val;
+	/* TODO: Turn this into flags. */
 	int filled;
+	int candidate;
 };
 
 void find_keyvals_in_buffer(
@@ -15,19 +17,20 @@ void find_keyvals_in_buffer(
 {
 	enum state {
 		start,
+		wait,
 		key,
 		separator,
 		closing,
 		val,
 	} state = start;
 
-	char *key_beg = NULL;
-	int key_len = 0;
-
 	char *val_beg = NULL;
 	int val_len = 0;
 
-	int keyval_index = 0;
+	int key_index = 0;
+
+	int num_candidates = 0;
+	int propable_candidate_index = 0;
 
 	char input = 0;
 
@@ -36,41 +39,68 @@ void find_keyvals_in_buffer(
 
 		switch (state) {
 		case start: {
-			if (key_beg != NULL && key_len > 0 && val_beg != NULL &&
-			    val_len > 0 && keyval_index < size) {
-				keyvals[keyval_index++] = (struct keyval){
-				    .key = (struct string){.data = key_beg,
-				                           .length = key_len},
-				    .val = (struct string){.data = val_beg,
-				                           .length = val_len}
-                                };
+			if (key_index > 0 && val_beg != NULL && val_len > 0) {
+				keyvals[propable_candidate_index].val =
+				    (struct string){.data = val_beg,
+				                    .length = val_len};
 
-				key_beg = NULL;
-				key_len = 0;
+				keyvals[propable_candidate_index].filled = 1;
+				keyvals[propable_candidate_index].candidate = 0;
+
+				key_index = 0;
 				val_beg = NULL;
 				val_len = 0;
 			}
 
-			if (((input | 32) >= 'a' && (input | 32) <= 'z') ||
-			    input == '_') {
-				key_beg = buffer + i;
-				key_len++;
-				state = key;
+			state = wait;
+
+			for (int j = 0; j < size; ++j) {
+				if (keyvals[j].filled) {
+					continue;
+				}
+
+				if (input == keyvals[j].key.data[0]) {
+					keyvals[j].candidate = 1;
+					num_candidates++;
+					key_index++;
+					state = key;
+
+					break;
+				}
+			}
+
+			break;
+		}
+
+		case wait: {
+			if (input == '\n') {
+				state = start;
 			}
 
 			break;
 		}
 
 		case key: {
-			if (((input | 32) >= 'a' && (input | 32) <= 'z') ||
-			    input == '_') {
-				key_len++;
-			} else if (input == '=') {
+			if (input == '=') {
 				state = separator;
-			} else {
-				key_beg = NULL;
-				key_len = 0;
+			} else if (num_candidates == 0) {
+				key_index = 0;
 				state = start;
+			} else {
+				for (int j = 0; j < size; ++j) {
+					if (!keyvals[j].candidate) {
+						continue;
+					}
+
+					if (input !=
+					    keyvals[j].key.data[key_index]) {
+						keyvals[j].candidate = 0;
+					} else {
+						propable_candidate_index = j;
+					}
+				}
+
+				key_index++;
 			}
 
 			break;
@@ -101,8 +131,7 @@ void find_keyvals_in_buffer(
 
 		case closing: {
 			if (input != '\n') {
-				key_beg = NULL;
-				key_len = 0;
+				key_index = 0;
 				val_beg = NULL;
 				val_len = 0;
 			}
@@ -125,54 +154,40 @@ void keyvals_from_envp(struct keyval *keyvals, int size, char *envp[])
 			continue;
 		}
 
-		int keyval_index = 0;
-
 		for (int k = 0; k < size; ++k) {
-			if(keyvals[k].filled) {
+			if (keyvals[k].filled) {
 				continue;
-		}
+			}
 
 			if (first == keyvals[k].key.data[0]) {
-				keyval_index = k;
+				keyvals[k].candidate = 1;
 			}
 		}
 
-		for (int j = 0;
-		     envp[i][j] != '\0' && j < keyvals[keyval_index].key.length;
-		     ++j) {
-			if (envp[i][j] != keyvals[keyval_index].key.data[j]) {
-				break;
+		for (int k = 0; k < size; ++k) {
+			if (!keyvals[k].candidate) {
+				continue;
 			}
 
-			if (j + 1 == keyvals[keyval_index].key.length &&
-			    envp[i][j + 1] != '\0' && envp[i][j + 1] == '=' &&
-			    envp[i][j + 2] != '\0') {
-				keyvals[keyval_index].filled = 1;
-				keyvals[keyval_index].val = (struct string){
-				    .data = envp[i] + j + 2,
-				    .length = strlen(envp[i]) - (j + 2)};
+			for (int j = 0;
+			     envp[i][j] != '\0' && j < keyvals[k].key.length;
+			     ++j) {
+				if (envp[i][j] != keyvals[k].key.data[j]) {
+					keyvals[k].candidate = 0;
+					break;
+				}
+
+				if (j + 1 == keyvals[k].key.length &&
+				    envp[i][j + 1] != '\0' &&
+				    envp[i][j + 1] == '=' &&
+				    envp[i][j + 2] != '\0') {
+					keyvals[k].filled = 1;
+					keyvals[k].val = (struct string){
+					    .data = envp[i] + j + 2,
+					    .length =
+						strlen(envp[i]) - (j + 2)};
+				}
 			}
 		}
 	}
-}
-
-struct string keyval_get_or(
-    struct keyval *keyvals,
-    int size,
-    struct string key,
-    struct string alt,
-    int *found)
-{
-	for (int i = 0; i < size; ++i) {
-		if (found[i]) {
-			continue;
-		}
-
-		if (string_equals(key, keyvals[i].key)) {
-			found[i] = 1;
-			return keyvals[i].val;
-		}
-	}
-
-	return alt;
 }
