@@ -43,11 +43,7 @@ enum {
 struct fd_result open(const char *path, int64_t flags)
 {
 	int64_t result = (int64_t)syscall4(
-	    __NR_openat,
-	    (void *)AT_FDCWD,
-	    (void *)path,
-	    (void *)flags,
-	    0);
+	    __NR_openat, (void *)AT_FDCWD, (void *)path, (void *)flags, 0);
 
 	if (result >= 0) {
 		return (struct fd_result){.ok = 1, .fd = result};
@@ -58,8 +54,8 @@ struct fd_result open(const char *path, int64_t flags)
 
 struct io_result read(int64_t fd, void *buf, size_t count)
 {
-	int64_t result = (int64_t)syscall3(
-	    __NR_read, (void *)fd, buf, (void *)count);
+	int64_t result =
+	    (int64_t)syscall3(__NR_read, (void *)fd, buf, (void *)count);
 
 	if (result >= 0) {
 		return (struct io_result){.ok = 1, .n_bytes = result};
@@ -70,8 +66,8 @@ struct io_result read(int64_t fd, void *buf, size_t count)
 
 struct io_result write(int64_t fd, void *buf, size_t count)
 {
-	int64_t result = (int64_t)syscall3(
-	    __NR_write, (void *)fd, buf, (void *)count);
+	int64_t result =
+	    (int64_t)syscall3(__NR_write, (void *)fd, buf, (void *)count);
 
 	if (result >= 0) {
 		return (struct io_result){.ok = 1, .n_bytes = result};
