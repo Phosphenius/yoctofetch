@@ -47,21 +47,6 @@ void find_keyvals_in_buffer(
 
 		switch (state) {
 		case start: {
-			if (key_index > 0 && val_beg != NULL && val_len > 0) {
-				keyvals[propable_candidate_index].val =
-				    (struct string){.data = val_beg,
-				                    .length = val_len};
-
-				keyvals[propable_candidate_index].flags |=
-				    KEYVAL_FILLED;
-				keyvals[propable_candidate_index].flags &=
-				    ~KEYVAL_CANDIDATE;
-
-				key_index = 0;
-				val_beg = NULL;
-				val_len = 0;
-			}
-
 			state = wait;
 
 			for (int64_t j = 0; j < size; ++j) {
@@ -72,11 +57,12 @@ void find_keyvals_in_buffer(
 				if (input == keyvals[j].key.data[0]) {
 					keyvals[j].flags |= KEYVAL_CANDIDATE;
 					num_candidates++;
-					key_index++;
-					state = key;
-
-					break;
 				}
+			}
+
+			if (num_candidates > 0) {
+				key_index++;
+				state = key;
 			}
 
 			break;
@@ -107,6 +93,7 @@ void find_keyvals_in_buffer(
 					    keyvals[j].key.data[key_index]) {
 						keyvals[j].flags &=
 						    ~KEYVAL_CANDIDATE;
+						num_candidates--;
 					} else {
 						propable_candidate_index = j;
 					}
@@ -134,6 +121,26 @@ void find_keyvals_in_buffer(
 			if (input == '"') {
 				state = closing;
 			} else if (input == '\n') {
+				/* FIXME: Any thing we can do about this
+				 * duplicate code? */
+				if (key_index > 0 && val_beg != NULL &&
+				    val_len > 0) {
+					keyvals[propable_candidate_index].val =
+					    (struct string){.data = val_beg,
+					                    .length = val_len};
+
+					keyvals[propable_candidate_index]
+					    .flags |= KEYVAL_FILLED;
+					keyvals[propable_candidate_index]
+					    .flags &= ~KEYVAL_CANDIDATE;
+
+					num_candidates--;
+
+					key_index = 0;
+					val_beg = NULL;
+					val_len = 0;
+				}
+
 				state = start;
 			} else if (input >= ' ' && input <= '~') {
 				val_len++;
@@ -143,6 +150,23 @@ void find_keyvals_in_buffer(
 
 		case closing: {
 			if (input != '\n') {
+				key_index = 0;
+				val_beg = NULL;
+				val_len = 0;
+			}
+
+			if (key_index > 0 && val_beg != NULL && val_len > 0) {
+				keyvals[propable_candidate_index].val =
+				    (struct string){.data = val_beg,
+				                    .length = val_len};
+
+				keyvals[propable_candidate_index].flags |=
+				    KEYVAL_FILLED;
+				keyvals[propable_candidate_index].flags &=
+				    ~KEYVAL_CANDIDATE;
+
+				num_candidates--;
+
 				key_index = 0;
 				val_beg = NULL;
 				val_len = 0;
