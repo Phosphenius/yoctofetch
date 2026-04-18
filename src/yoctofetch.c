@@ -110,7 +110,7 @@ int main(
 #ifndef NO_CONFIG_FILE
 	struct config config = config_from_file(user);
 #else
-	struct config config = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+	struct config config = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 #endif
 
 	char os_release_buffer[1 << 9];
