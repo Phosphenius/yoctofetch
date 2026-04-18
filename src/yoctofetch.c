@@ -201,6 +201,15 @@ int main(
 	    .data = swap_buffer_backend,
 	    .length = 28};
 
+	char color_buffer_backend[] =
+	    "\033[0m\033[1;39m       Colors: \033[0m\033[49m   \033[49m   "
+	    "\033[49m   \033[49m   \033[49m   \033[49m   \033[49m   "
+	    "\033[49m   \033[49m\033[0m\n";
+
+	int64_t color_buffer_size = sizeof color_buffer_backend;
+
+	char pad_buf[] = "                                 ";
+
 	int64_t logo_height = 0;
 
 	switch (buffer_config.logo) {
@@ -217,6 +226,7 @@ int main(
 
 	int64_t delay_logo = 0;
 	int64_t logo_lines_written = 0;
+	int64_t output_lines_written = 0;
 	char trailer[] = "\033[0m\n";
 
 	for (int64_t i = 0; i < 30; ++i) {
@@ -258,6 +268,12 @@ int main(
 
 			gather_stack_push(
 			    gather_stack, &gather_stack_pointer, iov);
+		} else if (output_lines_written == logo_lines_written) {
+			gather_stack_push(
+			    gather_stack,
+			    &gather_stack_pointer,
+			    (struct iovec){.iov_base = pad_buf,
+			                   .iov_len = sizeof pad_buf});
 		}
 
 		delay_logo = 0;
@@ -277,6 +293,7 @@ int main(
 			    &gather_stack_pointer,
 			    user_at_host_buffer);
 
+			output_lines_written++;
 			break;
 		}
 
@@ -297,6 +314,7 @@ int main(
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, os_buffer);
 
+			output_lines_written++;
 			break;
 		}
 
@@ -352,6 +370,8 @@ int main(
 
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, host_buffer);
+
+			output_lines_written++;
 			break;
 		}
 
@@ -381,6 +401,7 @@ int main(
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, kernel_buffer);
 
+			output_lines_written++;
 			break;
 		}
 
@@ -402,6 +423,7 @@ int main(
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, uptime_buffer);
 
+			output_lines_written++;
 			break;
 		}
 
@@ -427,6 +449,7 @@ int main(
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, shell_buffer);
 
+			output_lines_written++;
 			break;
 		}
 
@@ -455,6 +478,7 @@ int main(
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, wm_buffer);
 
+			output_lines_written++;
 			break;
 		}
 
@@ -479,6 +503,7 @@ int main(
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, term_buffer);
 
+			output_lines_written++;
 			break;
 		}
 
@@ -504,6 +529,8 @@ int main(
 
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, mem_buffer);
+
+			output_lines_written++;
 			break;
 		}
 
@@ -530,6 +557,41 @@ int main(
 
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, swap_buffer);
+
+			output_lines_written++;
+			break;
+		}
+
+		case 10: {
+			if (!config.show_color) {
+				delay_logo = 1;
+				continue;
+			}
+
+			if (buffer_config.use_color) {
+				set_color_at(
+				    color_buffer_backend,
+				    buffer_config.color,
+				    9);
+
+				color_buffer_backend[33] = '0';
+				color_buffer_backend[41] = '1';
+				color_buffer_backend[49] = '2';
+				color_buffer_backend[57] = '3';
+				color_buffer_backend[65] = '4';
+				color_buffer_backend[73] = '5';
+				color_buffer_backend[81] = '6';
+				color_buffer_backend[89] = '7';
+				color_buffer_backend[97] = '8';
+			}
+
+			gather_stack_push(
+			    gather_stack,
+			    &gather_stack_pointer,
+			    (struct iovec){.iov_base = color_buffer_backend,
+			                   .iov_len = color_buffer_size});
+
+			output_lines_written++;
 			break;
 		}
 

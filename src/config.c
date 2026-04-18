@@ -14,6 +14,7 @@ struct config {
 	int64_t show_terminal;
 	int64_t show_memory;
 	int64_t show_swap;
+	int64_t show_color;
 };
 
 #ifndef NO_CONFIG_FILE
@@ -28,6 +29,7 @@ enum {
 	CONFIG_SHOW_TERMINAL,
 	CONFIG_SHOW_MEMORY,
 	CONFIG_SHOW_SWAP,
+	CONFIG_SHOW_COLOR,
 };
 
 struct config config_from_buffer(char *buffer, int64_t buffer_length)
@@ -49,8 +51,10 @@ struct config config_from_buffer(char *buffer, int64_t buffer_length)
 		{.key = STR_INIT("show_terminal"), .val = STR_INIT("1")},
 	    [CONFIG_SHOW_MEMORY] =
 		{.key = STR_INIT("show_memory"),   .val = STR_INIT("1")},
-	    [CONFIG_SHOW_SWAP] = {
-				  .key = STR_INIT("show_swap"),     .val = STR_INIT("1")}
+	    [CONFIG_SHOW_SWAP] =
+		{.key = STR_INIT("show_swap"),     .val = STR_INIT("1")},
+	    [CONFIG_SHOW_COLOR] = {
+				  .key = STR_INIT("show_color"),    .val = STR_INIT("1")}
         };
 
 	const int64_t keyvals_len = sizeof keyvals / sizeof keyvals[0];
@@ -72,8 +76,9 @@ struct config config_from_buffer(char *buffer, int64_t buffer_length)
 		string_equals(keyvals[CONFIG_SHOW_TERMINAL].val, STR("1")),
 	    .show_memory =
 		string_equals(keyvals[CONFIG_SHOW_MEMORY].val, STR("1")),
-	    .show_swap =
-		string_equals(keyvals[CONFIG_SHOW_SWAP].val, STR("1"))};
+	    .show_swap = string_equals(keyvals[CONFIG_SHOW_SWAP].val, STR("1")),
+	    .show_color =
+		string_equals(keyvals[CONFIG_SHOW_COLOR].val, STR("1"))};
 }
 
 struct config config_from_file(struct string user)
@@ -128,7 +133,7 @@ alternative_file:
 
 	return config_from_buffer(buf, read_res.n_bytes);
 error:
-	return (struct config){1, 1, 1, 1, 1, 1, 1, 1, 1};
+	return (struct config){1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 }
 
 #endif
