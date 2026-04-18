@@ -5,18 +5,18 @@
  */
 
 void __attribute__((used)) *
-    memcpy(void *restrict dest, const void *restrict src, size_t count)
+    memcpy(void *restrict dest, const void *restrict src, int64_t count)
 {
-	for (size_t i = 0; i < count; ++i) {
+	for (int64_t i = 0; i < count; ++i) {
 		*((unsigned char *)dest + i) = *((unsigned char *)src + i);
 	}
 
 	return dest;
 }
 
-void __attribute__((used)) * memset(void *dest, int ch, size_t count)
+void __attribute__((used)) * memset(void *dest, int64_t ch, int64_t count)
 {
-	for (size_t i = 0; i < count; ++i) {
+	for (int64_t i = 0; i < count; ++i) {
 		*((unsigned char *)dest + i) = ch;
 	}
 
@@ -33,7 +33,7 @@ size_t strlen(const char *str)
 	return p - str;
 }
 
-int string_equals(struct string s1, struct string s2)
+int64_t string_equals(struct string s1, struct string s2)
 {
 	if (s1.length == 0 && s2.length == 0) {
 		return 1;

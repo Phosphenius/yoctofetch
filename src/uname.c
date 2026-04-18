@@ -13,4 +13,4 @@ struct utsname {
 	char domainname[65];
 };
 
-int uname(struct utsname *buf) { return (long int)syscall1(__NR_uname, buf); }
+int64_t uname(struct utsname *buf) { return (int64_t)syscall1(__NR_uname, buf); }

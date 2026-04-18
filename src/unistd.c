@@ -40,13 +40,13 @@ enum {
 	#error "Architecture not supported"
 #endif
 
-struct fd_result open(const char *path, int flags)
+struct fd_result open(const char *path, int64_t flags)
 {
-	int result = (long int)syscall4(
+	int64_t result = (int64_t)syscall4(
 	    __NR_openat,
 	    (void *)AT_FDCWD,
 	    (void *)path,
-	    (void *)(long int)flags,
+	    (void *)flags,
 	    0);
 
 	if (result >= 0) {
@@ -56,10 +56,10 @@ struct fd_result open(const char *path, int flags)
 	return (struct fd_result){.ok = 0, .errno = -result};
 }
 
-struct io_result read(int fd, void *buf, size_t count)
+struct io_result read(int64_t fd, void *buf, size_t count)
 {
-	int result = (long int)syscall3(
-	    __NR_read, (void *)(size_t)fd, buf, (void *)count);
+	int64_t result = (int64_t)syscall3(
+	    __NR_read, (void *)fd, buf, (void *)count);
 
 	if (result >= 0) {
 		return (struct io_result){.ok = 1, .n_bytes = result};
@@ -68,10 +68,10 @@ struct io_result read(int fd, void *buf, size_t count)
 	return (struct io_result){.ok = 0, .errno = -result};
 }
 
-struct io_result write(int fd, void *buf, size_t count)
+struct io_result write(int64_t fd, void *buf, size_t count)
 {
-	int result = (long int)syscall3(
-	    __NR_write, (void *)(size_t)fd, buf, (void *)count);
+	int64_t result = (int64_t)syscall3(
+	    __NR_write, (void *)fd, buf, (void *)count);
 
 	if (result >= 0) {
 		return (struct io_result){.ok = 1, .n_bytes = result};

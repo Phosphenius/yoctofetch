@@ -9,9 +9,9 @@ struct iovec {
 	size_t iov_len;
 };
 
-struct io_result writev(int fd, const struct iovec *iov, int iovcnt)
+struct io_result writev(int64_t fd, const struct iovec *iov, int64_t iovcnt)
 {
-	int result = (long int)syscall3(
+	int64_t result = (int64_t)syscall3(
 	    __NR_writev,
 	    (void *)(size_t)fd,
 	    (struct iovec *)iov,

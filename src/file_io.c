@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-struct string read_file(char *file, char *buf, int buf_len, struct string alt)
+struct string read_file(char *file, char *buf, int64_t buf_len, struct string alt)
 {
 	struct fd_result fd_res = open(file, O_RDONLY);
 

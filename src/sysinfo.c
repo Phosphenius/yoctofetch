@@ -19,7 +19,7 @@ struct sysinfo {
 	unsigned int mem_unit;
 };
 
-int sysinfo(struct sysinfo *info)
+int64_t sysinfo(struct sysinfo *info)
 {
-	return (long int)syscall1(__NR_sysinfo, info);
+	return (int64_t)syscall1(__NR_sysinfo, info);
 }
