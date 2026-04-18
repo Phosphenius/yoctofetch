@@ -40,10 +40,16 @@ void find_keyvals_in_buffer(
 	int64_t num_candidates = 0;
 	int64_t propable_candidate_index = 0;
 
+	int64_t keyvals_found = 0;
+
 	char input = 0;
 
 	for (int64_t i = 0; i < buffer_length; ++i) {
 		input = buffer[i];
+
+		if(keyvals_found >= size) {
+			return;
+		}
 
 		switch (state) {
 		case start: {
@@ -136,6 +142,8 @@ void find_keyvals_in_buffer(
 
 					num_candidates--;
 
+					keyvals_found++;
+
 					key_index = 0;
 					val_beg = NULL;
 					val_len = 0;
@@ -166,6 +174,8 @@ void find_keyvals_in_buffer(
 				    ~KEYVAL_CANDIDATE;
 
 				num_candidates--;
+
+				keyvals_found++;
 
 				key_index = 0;
 				val_beg = NULL;
