@@ -9,7 +9,7 @@ include base.mk
 override CFLAGS = $(CFLAGS_EXTRA) $(CFLAGS_CONFIG) -ffreestanding \
 	-fno-stack-protector
 override CPPFLAGS = $(CPPFLAGS_CONFIG) -MMD -MP
-override LDFLAGS = $(LDFLAGS_CONFIG) -nostdlib
+override LDFLAGS = $(LDFLAGS_CONFIG) -nostdlib -static
 
 $(BINNAME): src/yoctofetch.o arch/$(ARCH)/start.o arch/$(ARCH)/syscall.o
 	$(CC) $(LDFLAGS) $^ -o $@ $(LOADLIBES) $(LDLIBS)

@@ -12,7 +12,7 @@ include base.mk
 CFLAGS_ALL = $(CFLAGS_EXTRA) $(CFLAGS_CONFIG) -ffreestanding \
 	-fno-stack-protector
 CPPFLAGS_ALL = $(CPPFLAGS_CONFIG) -MMD -MP
-LDFLAGS_ALL = $(LDFLAGS_CONFIG) -nostdlib
+LDFLAGS_ALL = $(LDFLAGS_CONFIG) -nostdlib -static
 
 src/yoctofetch.o: src/yoctofetch.c
 	$(CC) $(CFLAGS_ALL) $(CPPFLAGS_ALL)  -c -o $@ $?
