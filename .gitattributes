@@ -8,3 +8,4 @@
 /manifest.scm -linguist-detectable
 
 yoctofetch.1 linguist-documentation
+yoctofetch_config.5 linguist-documentation
