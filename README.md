@@ -33,11 +33,10 @@ Despite its incredible performance, it still supports quite a few features:
 
 - Logos (currently only Guix and Arch—more to come)
 - The majority of common system information
-- Costumization via command line flags
-    - Force a certain logo
+- Customization via a configuration file
     - Disable output of specific system information
-    - Add padding at the bottom
 - [NO_COLOR](https://no-color.org/) support
+- Even man pages are included!
 
 ## Supported platforms
 
@@ -83,6 +82,44 @@ make
 # optionally install
 sudo make install
 ```
+
+## Customization
+The configuration file (usually `~/.config/yoctofetch/yoctofetch.conf`) can be
+used to en- or disable all available output options, given that configuration
+file support is enabled, which is the default, but can be changed via
+`./configure --disable-config-file` when building for some extra performance.
+
+Per default, all options are enabled—even if there is no configuration file
+(support).
+
+## Performance
+The actual performance depends on multiple factors, such as how yoctofetch was
+built and the layout of the files on the system.
+
+### Build configuration
+The recommended configuration for maximum performance is something like:
+```bash
+./configure CC=gcc  CFLAGS="-march=x86-64-v3 -O2 -flto" LDFLAGS="-Wl,--strip-all" --disable-config-file
+```
+At this point, it is uncertain if there is any benefit to `-flto`. One has to
+experiment with the flags a bit. On my system, this yields a binary 19K in size
+which runs in < 230µs.
+
+Also, `-march=x86_64-v3` will not work on older CPUs and might have to be
+replaced with `-march=native` or similar.
+
+### File layout
+
+`yoctofetch` expects the data in files to be in a certain order or layout
+and can read them faster if the layout matches the expectations.
+
+For the configuration file, this is usually under the control of the user
+and it is therefor recommended to keep the values in the configuration file in
+their default order.
+
+This does not work for system files like `/etc/os-release` though.
+So performance will vary, even on the same hardware if a different Linux™ distro
+is installed.
 
 ## Benchmarks
 
