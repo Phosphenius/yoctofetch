@@ -284,7 +284,7 @@ int main(
 
 			gather_stack_push(
 			    gather_stack, &gather_stack_pointer, iov);
-		} else if (output_lines_written == logo_lines_written) {
+		} else if (output_lines_written >= logo_lines_written) {
 			gather_stack_push(
 			    gather_stack,
 			    &gather_stack_pointer,
