@@ -65,6 +65,18 @@ void gather_stack_push_buffer(
 	    (struct iovec){.iov_base = buffer.data, .iov_len = buffer.length});
 }
 
+/* FIXME: ^v both functions are basically the same—can they me merged? */
+
+void gather_stack_push_string(
+    struct iovec *stack, int64_t *stack_pointer, struct string string)
+{
+	gather_stack_push(
+	    stack,
+	    stack_pointer,
+	    (struct iovec){.iov_base = (void *)string.data,
+	                   .iov_len = string.length});
+}
+
 int main(
     __attribute__((unused)) int argc,
     __attribute__((unused)) char *argv[],
@@ -307,10 +319,13 @@ int main(
 				    os_buffer_backend, buffer_config.color, 9);
 			}
 
-			buffer_append_string(&os_buffer, os_release_res.name);
-
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, os_buffer);
+
+			gather_stack_push_string(
+			    gather_stack,
+			    &gather_stack_pointer,
+			    os_release_res.name);
 
 			output_lines_written++;
 			break;
@@ -440,10 +455,13 @@ int main(
 			struct string shell_raw = env_keyvals[ENV_SHELL].val;
 			struct string shell = trim_shell(shell_raw);
 
-			buffer_append_string(&shell_buffer, shell);
-
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, shell_buffer);
+
+			gather_stack_push_string(
+			    gather_stack,
+			    &gather_stack_pointer,
+			    shell);
 
 			output_lines_written++;
 			break;
@@ -493,10 +511,13 @@ int main(
 
 			struct string term = env_keyvals[ENV_TERM].val;
 
-			buffer_append_string(&term_buffer, term);
-
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, term_buffer);
+
+			gather_stack_push_string(
+			    gather_stack,
+			    &gather_stack_pointer,
+			    term);
 
 			output_lines_written++;
 			break;
