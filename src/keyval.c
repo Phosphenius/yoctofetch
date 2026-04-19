@@ -230,7 +230,9 @@ void keyvals_from_envp(
 				continue;
 			}
 
-			for (int64_t j = 0;
+			/* We can start the loop at index = 1 here because the
+			 * first char has already been tested to match. */
+			for (int64_t j = 1;
 			     envp[i][j] != '\0' && j < keyvals[l].key.length;
 			     ++j) {
 				if (envp[i][j] != keyvals[l].key.data[j]) {
