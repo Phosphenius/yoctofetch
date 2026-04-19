@@ -10,8 +10,8 @@ struct os_release_result {
 };
 
 enum {
-	OS_RELEAES_ID = 0,
-	OS_RELEAES_NAME,
+	OS_RELEAES_NAME = 0,
+	OS_RELEAES_ID,
 };
 
 struct os_release_result parse_os_release(char *buf, int64_t buf_len)
@@ -31,10 +31,10 @@ struct os_release_result parse_os_release(char *buf, int64_t buf_len)
 	}
 
 	struct keyval keyvals[] = {
-	    [OS_RELEAES_ID] =
-		{.key = STR_INIT("ID"),   .val = STR_INIT("Unknown")},
-	    [OS_RELEAES_NAME] = {
-				 .key = STR_INIT("NAME"), .val = STR_INIT("Unknown")}
+	    [OS_RELEAES_NAME] =
+		{.key = STR_INIT("NAME"), .val = STR_INIT("Unknown")},
+	    [OS_RELEAES_ID] = {
+				   .key = STR_INIT("ID"),   .val = STR_INIT("Unknown")}
         };
 
 	const int64_t keyvals_len = sizeof keyvals / sizeof keyvals[0];
