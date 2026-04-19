@@ -20,5 +20,7 @@ install: $(BINNAME)
 	install -m 755 $< $(DESTDIR)$(prefix)/bin
 	install -d $(DESTDIR)$(prefix)/share/man/man1/
 	install -m 644 yoctofetch.1 $(DESTDIR)$(prefix)/share/man/man1/
+	install -d $(DESTDIR)$(prefix)/share/man/man5/
+	install -m 644 yoctofetch_config.5 $(DESTDIR)$(prefix)/share/man/man5/
 	install -d $(DESTDIR)$(prefix)/etc
 	install -m 777 etc/yoctofetch.conf $(DESTDIR)$(prefix)/etc
