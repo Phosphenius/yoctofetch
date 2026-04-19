@@ -244,7 +244,7 @@ void keyvals_from_envp(
 					keyvals[l].val = (struct string){
 					    .data = envp[i] + j + 2,
 					    .length =
-						strlen(envp[i]) - (j + 2)};
+						strlen(envp[i] + j + 2)};
 
 					break;
 				}
