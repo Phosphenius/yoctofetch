@@ -245,6 +245,8 @@ void keyvals_from_envp(
 					    .data = envp[i] + j + 2,
 					    .length =
 						strlen(envp[i]) - (j + 2)};
+
+					break;
 				}
 			}
 		}
