@@ -18,6 +18,7 @@ struct keyval {
 struct index_list {
 	int64_t len;
 	int64_t *list;
+	int64_t num_found;
 };
 
 void find_keyvals_in_buffer(
@@ -240,6 +241,13 @@ void keyvals_from_envp(
 				    envp[i][j + 1] != '\0' &&
 				    envp[i][j + 1] == '=' &&
 				    envp[i][j + 2] != '\0') {
+					if (++index_list[mapped_index]
+					          .num_found >=
+					    index_list[mapped_index].len) {
+						index_list[mapped_index].len =
+						    0;
+					}
+
 					keyvals[l].flags |= KEYVAL_FILLED;
 					keyvals[l].val = (struct string){
 					    .data = envp[i] + j + 2,
