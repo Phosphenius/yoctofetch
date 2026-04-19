@@ -294,15 +294,17 @@ int main(
 		case 0: {
 			buffer_append_string(&user_at_host_buffer, user);
 			buffer_append_char(&user_at_host_buffer, '@');
-			buffer_append(
-			    &user_at_host_buffer,
-			    uts.nodename,
-			    strlen(uts.nodename));
 
 			gather_stack_push_buffer(
 			    gather_stack,
 			    &gather_stack_pointer,
 			    user_at_host_buffer);
+
+			gather_stack_push_string(
+			    gather_stack,
+			    &gather_stack_pointer,
+			    (struct string){.data = uts.nodename, .length =
+			    strlen(uts.nodename)});
 
 			output_lines_written++;
 			break;
