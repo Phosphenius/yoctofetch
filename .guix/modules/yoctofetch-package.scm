@@ -15,10 +15,10 @@
   (or (git-predicate (string-append (current-source-directory) "/../.."))
       (const #t)))
 
-(define-public yoctofetch
+(define-public yoctofetch-git
   (package
-    (name "yoctofetch")
-    (version "1.1.0-git")
+    (name "yoctofetch-git")
+    (version "2.0.0-git")
     (source
      (local-file "../.."
                  "yoctofetch-checkout"
@@ -36,4 +36,4 @@
     (home-page "https://codeberg.org/Phosphenius/yoctofetch")
     (license license:agpl3+)))
 
-yoctofetch
+yoctofetch-git
