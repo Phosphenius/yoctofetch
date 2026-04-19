@@ -611,11 +611,6 @@ int main(
 		}
 
 		default: {
-			struct iovec iov = {
-			    .iov_base = trailer, .iov_len = sizeof trailer};
-
-			gather_stack_push(
-			    gather_stack, &gather_stack_pointer, iov);
 			if (logo_lines_written > logo_height) {
 				/* FIXME: I know … */
 				i = 100;
@@ -623,6 +618,10 @@ int main(
 		}
 		}
 	}
+
+	struct iovec iov = {.iov_base = trailer, .iov_len = sizeof trailer};
+
+	gather_stack_push(gather_stack, &gather_stack_pointer, iov);
 
 	writev(STDOUT_FILENO, gather_stack, gather_stack_pointer + 1);
 
