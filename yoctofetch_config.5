@@ -2,3 +2,40 @@
 .\" SPDX-License-Identifier: GFDL-1.3-or-later
 
 .TH YOCTOFETCH_CONFIG 5
+
+.SH NAME
+.B yoctofetch_conf
+— yoctofetch configuration
+
+.SH DESCRIPTION
+.PP
+The following, kind of self-explanatory options exist:
+
+.IP show_os="1"
+.IP show_host="1"
+.IP show_kernel="1"
+.IP show_uptime="1"
+.IP show_shell="1"
+.IP show_desktop="1"
+.IP show_terminal="1"
+.IP show_memory="1"
+.IP show_swap="1"
+.IP show_color="1"
+
+.PP
+Valid values are either "1" or "0" to en- and disable options respectively.
+
+.SH FILES
+/etc/yoctofetch.conf
+.RS 4
+System wide configuration file.
+Will be loaded if no user configuration file is found.
+.RE
+
+~/.config/yoctofetch/yoctofetch.conf
+.RS 4
+User configuration file.
+.RE
+
+.SH SEE ALSO
+yoctofetch_config(5)

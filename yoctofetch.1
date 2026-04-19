@@ -3,19 +3,43 @@
 
 .TH YOCTOFETCH 1
 .SH NAME
-yoctofetch - system fetch tool
+.B yoctofetch
+— system fetch tool
 .SH SYNOPSIS
 .B yoctofetch
 .SH DESCRIPTION
-Fast(est) system fetch tool for Linux with a low footprint.
+Fast system fetch tool for Linux with a low footprint.
 
-Similar to neofetch etc. Only smaller, faster and with less features.
+Similar to neofetch, fastfetch etc. with comparably less features but really
+high performance and a tiny binary size.
+
+.SH FILES
+.PP
+/etc/yoctofetch.conf
+.RS 4
+System wide configuration file.
+Will be loaded if no user configuration file is found.
+Described in detail in yoctofetch_config(5).
+.RE
+
+.PP
+~/.config/yoctofetch/yoctofetch.conf
+.RS 4
+User configuration file. Described in detail in yoctofetch_config(5).
+.RE
+
+.SH SEE ALSO
+yoctofetch_config(5)
+
 .SH AUTHOR
 Written by Luca Kredel
+
 .SH BUGS
-None, of course.
+None, of course. /s
+
 .SH REPORTING BUGS
 https://codeberg.org/Phosphenius/yoctofetch/issues
+
 .SH COPYRIGHT
 Copyright (C) 2025 Luca Kredel.
 License GPLv3: GNU GPL version 3 or later <https://www.gnu.org/licenses/gpl-3.0.html>
