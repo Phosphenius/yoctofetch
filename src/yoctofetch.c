@@ -226,7 +226,7 @@ int main(
 
 	switch (buffer_config.logo) {
 	case LOGO_NONE:
-		logo_height = -1;
+		logo_height = NONE_LOGO_HEIGHT;
 		break;
 	case LOGO_GUIX:
 		logo_height = GUIX_LOGO_HEIGHT;
@@ -247,6 +247,9 @@ int main(
 
 			switch (buffer_config.logo) {
 			case LOGO_NONE:
+				iov.iov_base =
+				    none_logo_data[logo_lines_written];
+				iov.iov_len = NONE_LOGO_WIDTH;
 				break;
 
 			case LOGO_GUIX:

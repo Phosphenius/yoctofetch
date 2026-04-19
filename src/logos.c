@@ -4,6 +4,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#define NONE_LOGO_WIDTH 5
+#define NONE_LOGO_HEIGHT 0
+
+char none_logo_data[][NONE_LOGO_WIDTH + 1] = {"\t\t\t\t "};
+
 #define GUIX_LOGO_WIDTH 41
 #define GUIX_LOGO_HEIGHT 9
 
