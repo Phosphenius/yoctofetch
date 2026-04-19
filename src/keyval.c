@@ -41,6 +41,8 @@ void find_keyvals_in_buffer(
 	int64_t propable_candidate_index = 0;
 
 	int64_t keyvals_found = 0;
+	int64_t index_offset = 0;
+	int64_t index_offset2 = 0;
 
 	char input = 0;
 
@@ -51,8 +53,12 @@ void find_keyvals_in_buffer(
 		case start: {
 			state = wait;
 
-			for (int64_t j = 0; j < size; ++j) {
+			for (int64_t j = index_offset; j < size; ++j) {
 				if (keyvals[j].flags & KEYVAL_FILLED) {
+					if (index_offset == j) {
+						index_offset++;
+					}
+
 					continue;
 				}
 
@@ -85,9 +91,9 @@ void find_keyvals_in_buffer(
 				key_index = 0;
 				state = start;
 			} else {
-				for (int64_t j = 0; j < size; ++j) {
-					if ((keyvals[j].flags ^
-					     KEYVAL_CANDIDATE)) {
+				for (int64_t j = index_offset2; j < size; ++j) {
+					if (keyvals[j].flags ^
+					    KEYVAL_CANDIDATE) {
 						continue;
 					}
 
@@ -136,6 +142,11 @@ void find_keyvals_in_buffer(
 					keyvals[propable_candidate_index]
 					    .flags &= ~KEYVAL_CANDIDATE;
 
+					if (index_offset2 ==
+					    propable_candidate_index) {
+						index_offset2++;
+					}
+
 					num_candidates--;
 
 					if (++keyvals_found >= size) {
@@ -170,6 +181,10 @@ void find_keyvals_in_buffer(
 				    KEYVAL_FILLED;
 				keyvals[propable_candidate_index].flags &=
 				    ~KEYVAL_CANDIDATE;
+
+				if (index_offset2 == propable_candidate_index) {
+					index_offset2++;
+				}
 
 				num_candidates--;
 
