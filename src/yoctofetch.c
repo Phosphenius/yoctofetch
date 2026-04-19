@@ -33,7 +33,7 @@
 
 enum {
 	FILE_BUF_LEN = 1 << 9,
-	GATHER_STACK_LENGTH = 32,
+	GATHER_STACK_LENGTH = 38,
 };
 
 enum {
