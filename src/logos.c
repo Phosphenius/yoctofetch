@@ -19,29 +19,29 @@ char guix_logo_data[][GUIX_LOGO_WIDTH + 1] = {
     "\n\033[1;39m             :+/:::-             ",
     "\n\033[1;39m             `-....`             "};
 
-#define ARCH_LOGO_WIDTH 40
+#define ARCH_LOGO_WIDTH 48
 #define ARCH_LOGO_HEIGHT 18
 
 char arch_logo_data[][ARCH_LOGO_WIDTH + 1] = {
-    "                  -`                 ",
-    "                 .o+`                ",
-    "                `ooo/                ",
-    "               `+oooo:               ",
-    "              `+oooooo:              ",
-    "              -+oooooo+:             ",
-    "            `/:-:++oooo+:            ",
-    "           `/++++/+++++++:           ",
-    "          `/++++++++++++++:          ",
-    "         `/+++ooooooooooooo/`        ",
-    "        ./ooosssso++osssssso+`       ",
-    "       .oossssso-````/ossssss+`      ",
-    "      -osssssso.      :ssssssso.     ",
-    "     :osssssss/        osssso+++.    ",
-    "    /ossssssss/        +ssssooo/-    ",
-    "  `/ossssso+/:-        -:/+osssso+-  ",
-    " `+sso+:-`                 `.-/+oso: ",
-    "`++:.                           `-/+/",
-    ".`                                 `/"};
+    "\0\033[1;39m                  -`                 ",
+    "\n\033[1;39m                 .o+`                ",
+    "\n\033[1;39m                `ooo/                ",
+    "\n\033[1;39m               `+oooo:               ",
+    "\n\033[1;39m              `+oooooo:              ",
+    "\n\033[1;39m              -+oooooo+:             ",
+    "\n\033[1;39m            `/:-:++oooo+:            ",
+    "\n\033[1;39m           `/++++/+++++++:           ",
+    "\n\033[1;39m          `/++++++++++++++:          ",
+    "\n\033[1;39m         `/+++ooooooooooooo/`        ",
+    "\n\033[1;39m        ./ooosssso++osssssso+`       ",
+    "\n\033[1;39m       .oossssso-````/ossssss+`      ",
+    "\n\033[1;39m      -osssssso.      :ssssssso.     ",
+    "\n\033[1;39m     :osssssss/        osssso+++.    ",
+    "\n\033[1;39m    /ossssssss/        +ssssooo/-    ",
+    "\n\033[1;39m  `/ossssso+/:-        -:/+osssso+-  ",
+    "\n\033[1;39m `+sso+:-`                 `.-/+oso: ",
+    "\n\033[1;39m`++:.                           `-/+/",
+    "\n\033[1;39m.`                                 `/"};
 
 enum logo {
 	LOGO_NONE,

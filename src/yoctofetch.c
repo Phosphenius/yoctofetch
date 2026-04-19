@@ -264,14 +264,15 @@ int main(
 				break;
 
 			case LOGO_ARCH:
-				iov.iov_base = arch_logo_data;
+				iov.iov_base =
+				    arch_logo_data[logo_lines_written];
 				iov.iov_len = ARCH_LOGO_WIDTH;
 
 				if (buffer_config.use_color) {
 					set_color_at(
 					    arch_logo_data[logo_lines_written],
 					    buffer_config.color,
-					    5);
+					    6);
 				}
 				break;
 			};
