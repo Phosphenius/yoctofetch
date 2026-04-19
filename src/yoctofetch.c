@@ -204,11 +204,11 @@ int main(
 	char color_buffer_backend[] =
 	    "\033[0m\033[1;39m       Colors: \033[0m\033[49m   \033[49m   "
 	    "\033[49m   \033[49m   \033[49m   \033[49m   \033[49m   "
-	    "\033[49m   \033[49m\033[0m\n";
+	    "\033[49m   \033[49m\033[0m";
 
 	int64_t color_buffer_size = sizeof color_buffer_backend;
 
-	char pad_buf[] = "                                 ";
+	char pad_buf[] = "\n                                 ";
 
 	int64_t logo_height = 0;
 
@@ -246,7 +246,7 @@ int main(
 					set_color_at(
 					    guix_logo_data[logo_lines_written],
 					    buffer_config.color,
-					    5);
+					    6);
 				}
 
 				break;
@@ -286,7 +286,6 @@ int main(
 			    &user_at_host_buffer,
 			    uts.nodename,
 			    strlen(uts.nodename));
-			buffer_append_char(&user_at_host_buffer, '\n');
 
 			gather_stack_push_buffer(
 			    gather_stack,
@@ -309,7 +308,6 @@ int main(
 			}
 
 			buffer_append_string(&os_buffer, os_release_res.name);
-			buffer_append_char(&os_buffer, '\n');
 
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, os_buffer);
@@ -362,10 +360,9 @@ int main(
 				buffer_append_string(&host_buffer, prod_name);
 				buffer_append_string(&host_buffer, STR(" ("));
 				buffer_append_string(&host_buffer, fam_name);
-				buffer_append_string(&host_buffer, STR(")\n"));
+				buffer_append_string(&host_buffer, STR(")"));
 			} else {
 				buffer_append_string(&host_buffer, model_name);
-				buffer_append_char(&host_buffer, '\n');
 			}
 
 			gather_stack_push_buffer(
@@ -396,7 +393,7 @@ int main(
 			buffer_append_string(&kernel_buffer, STR(" ("));
 			buffer_append(
 			    &kernel_buffer, uts.machine, strlen(uts.machine));
-			buffer_append_string(&kernel_buffer, STR(")\n"));
+			buffer_append_string(&kernel_buffer, STR(")"));
 
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, kernel_buffer);
@@ -444,7 +441,6 @@ int main(
 			struct string shell = trim_shell(shell_raw);
 
 			buffer_append_string(&shell_buffer, shell);
-			buffer_append_char(&shell_buffer, '\n');
 
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, shell_buffer);
@@ -473,7 +469,7 @@ int main(
 			buffer_append_string(&wm_buffer, wm);
 			buffer_append_string(&wm_buffer, STR(" ("));
 			buffer_append_string(&wm_buffer, session);
-			buffer_append_string(&wm_buffer, STR(")\n"));
+			buffer_append_string(&wm_buffer, STR(")"));
 
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, wm_buffer);
@@ -498,7 +494,6 @@ int main(
 			struct string term = env_keyvals[ENV_TERM].val;
 
 			buffer_append_string(&term_buffer, term);
-			buffer_append_char(&term_buffer, '\n');
 
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, term_buffer);
@@ -525,7 +520,7 @@ int main(
 			buffer_append_string(&mem_buffer, STR("M / "));
 			buffer_append_int(
 			    &mem_buffer, info.totalram / 1024 / 1024);
-			buffer_append_string(&mem_buffer, STR("M\n"));
+			buffer_append_string(&mem_buffer, STR("M"));
 
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, mem_buffer);
@@ -553,7 +548,7 @@ int main(
 			buffer_append_string(&swap_buffer, STR("M / "));
 			buffer_append_int(
 			    &swap_buffer, info.totalswap / 1024 / 1024);
-			buffer_append_string(&swap_buffer, STR("M\n"));
+			buffer_append_string(&swap_buffer, STR("M"));
 
 			gather_stack_push_buffer(
 			    gather_stack, &gather_stack_pointer, swap_buffer);

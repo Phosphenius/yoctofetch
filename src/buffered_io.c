@@ -160,6 +160,4 @@ void buffer_append_uptime(struct buffer *buffer, long uptime)
 	} else if (uptime_mins == 0 && uptime_hrs == 0 && uptime_days == 0) {
 		buffer_append_string(buffer, STR("< 1 minute"));
 	}
-
-	buffer_append_char(buffer, '\n');
 }
