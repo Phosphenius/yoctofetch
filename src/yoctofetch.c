@@ -303,8 +303,8 @@ int main(
 			gather_stack_push_string(
 			    gather_stack,
 			    &gather_stack_pointer,
-			    (struct string){.data = uts.nodename, .length =
-			    strlen(uts.nodename)});
+			    (struct string){.data = uts.nodename,
+			                    .length = strlen(uts.nodename)});
 
 			output_lines_written++;
 			break;
@@ -461,9 +461,7 @@ int main(
 			    gather_stack, &gather_stack_pointer, shell_buffer);
 
 			gather_stack_push_string(
-			    gather_stack,
-			    &gather_stack_pointer,
-			    shell);
+			    gather_stack, &gather_stack_pointer, shell);
 
 			output_lines_written++;
 			break;
@@ -517,9 +515,7 @@ int main(
 			    gather_stack, &gather_stack_pointer, term_buffer);
 
 			gather_stack_push_string(
-			    gather_stack,
-			    &gather_stack_pointer,
-			    term);
+			    gather_stack, &gather_stack_pointer, term);
 
 			output_lines_written++;
 			break;
